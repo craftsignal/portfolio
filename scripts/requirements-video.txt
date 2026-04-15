@@ -1,0 +1,5 @@
+# Slideshow / airplane_magic.mp4 generator
+# Requires ffmpeg on PATH: https://ffmpeg.org/download.html
+moviepy>=1.0.3,<2
+# MoviePy 1.x expects Pillow’s Image.ANTIALIAS (removed in Pillow 10+)
+Pillow>=9.5.0,<10
