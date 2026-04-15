@@ -10,6 +10,8 @@ type MagneticResumeButtonProps = {
   download?: boolean;
   className: string;
   children: React.ReactNode;
+  target?: React.HTMLAttributeAnchorTarget;
+  rel?: string;
 };
 
 export default function MagneticResumeButton({
@@ -17,6 +19,8 @@ export default function MagneticResumeButton({
   download,
   className,
   children,
+  target,
+  rel,
 }: MagneticResumeButtonProps) {
   const anchorRef = useRef<HTMLAnchorElement>(null);
   const x = useMotionValue(0);
@@ -68,6 +72,8 @@ export default function MagneticResumeButton({
         ref={anchorRef}
         href={href}
         download={download}
+        target={target}
+        rel={rel}
         className={className}
         style={{ x: springX, y: springY }}
       >

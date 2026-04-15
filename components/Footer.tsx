@@ -9,7 +9,7 @@ const CHAT_LINKEDIN_URL =
 
 export default function Footer() {
   return (
-    <footer className="relative z-10">
+    <footer className="relative z-10 bg-black bg-[linear-gradient(135deg,rgba(255,255,255,0.06)_0%,transparent_45%,transparent_100%)]">
       <div className="relative mx-auto flex min-h-[55vh] max-w-3xl flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[60vh] sm:py-24 md:py-28">
         <div className="mb-10 flex w-full max-w-md items-center justify-center gap-4">
           <span className="h-px max-w-24 flex-1 bg-neutral-600 sm:max-w-28" aria-hidden />
