@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coaching Insights — Design Spec Sheet</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0F0F0F;
+      --surface: #161616;
+      --surface-2: #1C1C1C;
+      --surface-3: #222222;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.12);
+      --text-primary: #F0F0F0;
+      --text-secondary: #888888;
+      --text-muted: #555555;
+
+      --red: #FF4D4D;
+      --red-dim: rgba(255,77,77,0.12);
+      --red-glow: rgba(255,77,77,0.25);
+
+      --green: #22C55E;
+      --green-dim: rgba(34,197,94,0.12);
+      --green-glow: rgba(34,197,94,0.25);
+
+      --purple: #A855F7;
+      --purple-dim: rgba(168,85,247,0.12);
+      --purple-glow: rgba(168,85,247,0.25);
+
+      --blue: #3B82F6;
+      --blue-dim: rgba(59,130,246,0.12);
+      --blue-glow: rgba(59,130,246,0.25);
+
+      --gold: #F59E0B;
+    }
+
+    html, body {
+      width: 100%;
+      background: var(--bg);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .canvas {
+      width: 1400px;
+      margin: 0 auto;
+      padding: 48px 40px 72px;
+    }
+
+    /* ── META BAR ── */
+    .meta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .meta-bar .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .meta-bar .pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .meta-bar .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    /* ── HERO CALLOUT ── */
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, #1A1A1A 0%, #161616 50%, #1A1219 100%);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 40px 48px;
+      margin-bottom: 36px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(168,85,247,0.06) 0%, transparent 50%, rgba(59,130,246,0.04) 100%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 48px;
+      right: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(168,85,247,0.6), rgba(59,130,246,0.6), transparent);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .hero-icon {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(59,130,246,0.2));
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .hero-content {
+      flex: 1;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(168,85,247,0.15);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 12px;
+    }
+
+    .hero-quote {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .hero-quote em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--purple), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .hero-badge {
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .hero-badge .fire-text {
+      font-size: 36px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .hero-badge .badge-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ── COLUMNS GRID ── */
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* ── COLUMN ── */
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ── COLUMN HEADER ── */
+    .col-header {
+      border-radius: 14px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .col-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      opacity: 0.06;
+    }
+
+    .col-header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .col-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .col-header-text {}
+
+    .col-section-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+
+    .col-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .col-count {
+      font-size: 11px;
+      font-weight: 500;
+      opacity: 0.6;
+      margin-top: 3px;
+    }
+
+    /* ── RED COLUMN ── */
+    .col-red .col-header {
+      background: linear-gradient(135deg, rgba(255,77,77,0.18) 0%, rgba(255,77,77,0.08) 100%);
+      border: 1px solid rgba(255,77,77,0.25);
+    }
+    .col-red .col-header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--red), rgba(255,77,77,0.3));
+      border-radius: 14px 14px 0 0;
+    }
+    .col-red .col-icon { background: rgba(255,77,77,0.2); }
+    .col-red .col-section-num { color: var(--red); }
+    .col-red .col-title { color: #FFB3B3; }
+
+    /* ── GREEN COLUMN ── */
+    .col-green .col-header {
+      background: linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(34,197,94,0.08) 100%);
+      border: 1px solid rgba(34,197,94,0.25);
+    }
+    .col-green .col-header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), rgba(34,197,94,0.3));
+      border-radius: 14px 14px 0 0;
+    }
+    .col-green .col-icon { background: rgba(34,197,94,0.2); }
+    .col-green .col-section-num { color: var(--green); }
+    .col-green .col-title { color: #86EFAC; }
+
+    /* ── PURPLE COLUMN ── */
+    .col-purple .col-header {
+      background: linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(168,85,247,0.08) 100%);
+      border: 1px solid rgba(168,85,247,0.25);
+    }
+    .col-purple .col-header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--purple), rgba(168,85,247,0.3));
+      border-radius: 14px 14px 0 0;
+    }
+    .col-purple .col-icon { background: rgba(168,85,247,0.2); }
+    .col-purple .col-section-num { color: var(--purple); }
+    .col-purple .col-title { color: #D8B4FE; }
+
+    /* ── BLUE COLUMN ── */
+    .col-blue .col-header {
+      background: linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.08) 100%);
+      border: 1px solid rgba(59,130,246,0.25);
+    }
+    .col-blue .col-header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), rgba(59,130,246,0.3));
+      border-radius: 14px 14px 0 0;
+    }
+    .col-blue .col-icon { background: rgba(59,130,246,0.2); }
+    .col-blue .col-section-num { color: var(--blue); }
+    .col-blue .col-title { color: #BFDBFE; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .card-body {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    /* Bullet / Number indicators */
+    .card-num {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .col-red .card-num {
+      background: rgba(255,77,77,0.15);
+      color: var(--red);
+      border: 1px solid rgba(255,77,77,0.2);
+    }
+
+    .col-green .card-num {
+      background: rgba(34,197,94,0.15);
+      color: var(--green);
+      border: 1px solid rgba(34,197,94,0.2);
+    }
+
+    .col-purple .card-medal {
+      font-size: 22px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: -1px;
+    }
+
+    .col-blue .card-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(59,130,246,0.15);
+      color: var(--blue);
+      border: 1px solid rgba(59,130,246,0.3);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .card-text {
+      flex: 1;
+    }
+
+    .card-label {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+
+    .card-sublabel {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    /* ── PRIORITY BADGE ── */
+    .priority-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,77,77,0.15);
+      border: 1px solid rgba(255,77,77,0.35);
+      border-radius: 100px;
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-top: 7px;
+    }
+
+    .priority-badge::before {
+      content: '▲';
+      font-size: 7px;
+    }
+
+    /* ── RECOMMENDED BADGE ── */
+    .recommended-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(168,85,247,0.15);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 100px;
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-top: 7px;
+    }
+
+    .recommended-badge::before {
+      content: '★';
+      font-size: 9px;
+    }
+
+    /* ── OPTION CARD (purple) ── */
+    .option-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-card.rank-1 {
+      background: linear-gradient(135deg, rgba(168,85,247,0.08) 0%, var(--surface) 60%);
+      border-color: rgba(168,85,247,0.22);
+    }
+
+    .option-card.rank-1::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--purple), rgba(168,85,247,0.2));
+      border-radius: 12px 0 0 12px;
+    }
+
+    .option-card.rank-2 {
+      background: linear-gradient(135deg, rgba(148,163,184,0.06) 0%, var(--surface) 60%);
+      border-color: rgba(148,163,184,0.15);
+    }
+
+    .option-card.rank-3 {
+      background: linear-gradient(135deg, rgba(180,120,60,0.06) 0%, var(--surface) 60%);
+      border-color: rgba(180,120,60,0.15);
+    }
+
+    .option-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .option-medal {
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .option-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .option-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      padding-left: 34px;
+    }
+
+    /* ── DIVIDER ── */
+    .col-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .footer-sep {
+      width: 1px;
+      height: 14px;
+      background: var(--border-strong);
+    }
+
+    .footer-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 8px;
+    }
+
+    .footer-tag {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── CARD SUBTLE ACCENT ── */
+    .col-red .card {
+      border-left: 2px solid rgba(255,77,77,0.15);
+    }
+    .col-red .card:hover {
+      border-left-color: rgba(255,77,77,0.35);
+    }
+
+    .col-green .card {
+      border-left: 2px solid rgba(34,197,94,0.15);
+    }
+    .col-green .card:hover {
+      border-left-color: rgba(34,197,94,0.35);
+    }
+
+    .col-blue .card {
+      border-left: 2px solid rgba(59,130,246,0.15);
+    }
+    .col-blue .card:hover {
+      border-left-color: rgba(59,130,246,0.35);
+    }
+
+    /* ── SHIFT CALLOUT (red col special card) ── */
+    .shift-card {
+      background: linear-gradient(135deg, rgba(255,77,77,0.1), rgba(255,77,77,0.04));
+      border: 1px solid rgba(255,77,77,0.2);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .shift-arrow {
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .shift-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: #FFAAAA;
+      line-height: 1.4;
+    }
+
+    .shift-sub {
+      font-size: 11px;
+      color: rgba(255,170,170,0.6);
+      margin-top: 2px;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+
+    <!-- META BAR -->
+    <div class="meta-bar">
+      <span class="label">Design Coaching — Spec Sheet</span>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div class="pill">
+          <span class="dot"></span>
+          UX Coaching Session
+        </div>
+        <div class="pill">
+          Angled Mounting Plate Flow
+        </div>
+        <div class="pill" style="color:#A855F7;border-color:rgba(168,85,247,0.3);">
+          April 2026
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO CALLOUT -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-icon">💡</div>
+        <div class="hero-content">
+          <div class="hero-tag">Key Reframe</div>
+          <div class="hero-quote">
+            "Based on feedback, I reframed this from a
+            <em>user decision problem</em> to a <em>guidance problem.</em>"
+          </div>
+          <div class="hero-subtitle">Coach feedback &nbsp;·&nbsp; That's a senior-level statement 🔥</div>
+        </div>
+        <div class="hero-badge">
+          <div class="fire-text">🔥</div>
+          <div class="badge-label">Senior Level</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 COLUMNS -->
+    <div class="columns">
+
+      <!-- ── COLUMN 1 — KEY INSIGHTS ── -->
+      <div class="column col-red">
+        <div class="col-header">
+          <div class="col-header-inner">
+            <div class="col-icon">🔍</div>
+            <div class="col-header-text">
+              <div class="col-section-num">Section 01</div>
+              <div class="col-title">Key Insights</div>
+              <div class="col-count">4 insights identified</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">1</div>
+            <div class="card-text">
+              <div class="card-label">Users don't understand the angled mounting plate</div>
+              <div class="card-sublabel">Confusion about what it is and when they need it</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">2</div>
+            <div class="card-text">
+              <div class="card-label">Asking users to decide before they understand</div>
+              <div class="card-sublabel">Decision presented before context is established</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shift-card">
+          <div class="shift-arrow">↗</div>
+          <div>
+            <div class="shift-text">Shift: Asking → Guiding</div>
+            <div class="shift-sub">Core reframe of the entire flow</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">4</div>
+            <div class="card-text">
+              <div class="card-label">Don't ask technical decisions users don't understand</div>
+              <div class="card-sublabel">Remove friction by removing premature choices</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COLUMN 2 — ACTION PLAN ── -->
+      <div class="column col-green">
+        <div class="col-header">
+          <div class="col-header-inner">
+            <div class="col-icon">⚡</div>
+            <div class="col-header-text">
+              <div class="col-section-num">Section 02</div>
+              <div class="col-title">Action Plan</div>
+              <div class="col-count">5 actions · 1 highest priority</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">1</div>
+            <div class="card-text">
+              <div class="card-label">Redesign decision logic</div>
+              <div class="card-sublabel">Replace "Do you need angled plate?" with situation-based guidance</div>
+              <div class="priority-badge">Highest Priority</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">2</div>
+            <div class="card-text">
+              <div class="card-label">Combine steps</div>
+              <div class="card-sublabel">Merge "need plate?" + "left/right" into "What does your setup look like?"</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">3</div>
+            <div class="card-text">
+              <div class="card-label">Improve clarity of visuals</div>
+              <div class="card-sublabel">Clearer POV — show what the camera sees</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">4</div>
+            <div class="card-text">
+              <div class="card-label">Add education at the right moment</div>
+              <div class="card-sublabel">Contextual, not an upfront dump</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">5</div>
+            <div class="card-text">
+              <div class="card-label">Validate with real data</div>
+              <div class="card-sublabel">Customer Care data + Nightingale reference</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COLUMN 3 — DESIGN OPTIONS ── -->
+      <div class="column col-purple">
+        <div class="col-header">
+          <div class="col-header-inner">
+            <div class="col-icon">🎨</div>
+            <div class="col-header-text">
+              <div class="col-section-num">Section 03</div>
+              <div class="col-title">Design Options</div>
+              <div class="col-count">3 ranked options</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="option-card rank-1">
+          <div class="option-header">
+            <div class="option-medal">🥇</div>
+            <div>
+              <div class="option-name">Option A — Scenario-based</div>
+              <div class="recommended-badge">Recommended</div>
+            </div>
+          </div>
+          <div class="option-desc">
+            Show doorbell position → if angled, introduce plate → choose direction. Most natural, least cognitive load.
+          </div>
+        </div>
+
+        <div class="option-card rank-2">
+          <div class="option-header">
+            <div class="option-medal">🥈</div>
+            <div>
+              <div class="option-name">Option B — Guided questions</div>
+            </div>
+          </div>
+          <div class="option-desc">
+            "Is your doorbell facing the entryway directly?" → Yes / No branching flow. Clear but slightly more steps.
+          </div>
+        </div>
+
+        <div class="option-card rank-3">
+          <div class="option-header">
+            <div class="option-medal">🥉</div>
+            <div>
+              <div class="option-name">Option C — Educational first</div>
+            </div>
+          </div>
+          <div class="option-desc">
+            Explain the plate, then ask if needed. Less ideal — front-loads complexity before establishing need.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COLUMN 4 — NEXT STEPS ── -->
+      <div class="column col-blue">
+        <div class="col-header">
+          <div class="col-header-inner">
+            <div class="col-icon">🗺️</div>
+            <div class="col-header-text">
+              <div class="col-section-num">Section 04</div>
+              <div class="col-title">Next Steps</div>
+              <div class="col-count">7 steps to completion</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">1</div>
+            <div class="card-text">
+              <div class="card-label">Define problem clearly</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">2</div>
+            <div class="card-text">
+              <div class="card-label">Create 2–3 flows</div>
+              <div class="card-sublabel">Options A, B, and optional C</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">3</div>
+            <div class="card-text">
+              <div class="card-label">Update screens</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">4</div>
+            <div class="card-text">
+              <div class="card-label">Fix visuals</div>
+              <div class="card-sublabel">Camera POV perspective</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">5</div>
+            <div class="card-text">
+              <div class="card-label">Add microcopy improvements</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">6</div>
+            <div class="card-text">
+              <div class="card-label">Validate internally</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="card-num">7</div>
+            <div class="card-text">
+              <div class="card-label">Bring data</div>
+              <div class="card-sublabel">Customer Care + Nightingale</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /columns -->
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="footer-left">
+        <div class="footer-logo">Design Spec Sheet</div>
+        <div class="footer-sep"></div>
+        <div class="footer-meta">Coaching session artifact &nbsp;·&nbsp; For reference &amp; Figma import</div>
+      </div>
+      <div class="footer-right">
+        <div class="footer-tag">UX</div>
+        <div class="footer-tag">Coaching</div>
+        <div class="footer-tag">Doorbell Setup</div>
+        <div class="footer-tag">Infographic</div>
+      </div>
+    </div>
+
+  </div><!-- /canvas -->
+</body>
+</html>
