@@ -1,8 +1,14 @@
 import Link from "next/link";
 
+import { galleryArtworks } from "../artworkData";
+
 type PageProps = {
   params: Promise<{ id: string }>;
 };
+
+export function generateStaticParams() {
+  return galleryArtworks.map((a) => ({ id: a.id }));
+}
 
 export default async function GalleryArtworkPage({ params }: PageProps) {
   const { id } = await params;
