@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "predeploy": "next build",
-    "deploy": "gh-pages -d out -t"
+    "deploy": "gh-pages -d out -t",
+    "deploy:github-io": "NEXT_PUBLIC_BASE_PATH=/portfolio next build && gh-pages -d out -t"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
