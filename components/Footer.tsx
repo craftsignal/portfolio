@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GALLERY_WORLD_HREF } from "@/lib/gallery-links";
 import ConnectChat from "./ConnectChat";
 import CopyEmailButton from "./CopyEmailButton";
 
@@ -37,6 +38,15 @@ export default function Footer() {
           email={ACCOUNT_EMAIL}
           linkedinUrl={CHAT_LINKEDIN_URL}
         />
+
+        <p className="mt-10 font-sans text-sm text-neutral-500">
+          <Link
+            href={GALLERY_WORLD_HREF}
+            className="text-neutral-400 underline decoration-neutral-600 underline-offset-4 transition-colors hover:text-neutral-200"
+          >
+            Son&apos;s gallery — 3D world view
+          </Link>
+        </p>
       </div>
 
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 pb-10 pt-4 sm:px-10">

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import GalleryArtworkLightbox, {
   type GalleryLightboxPayload,
 } from "./GalleryArtworkLightbox";
@@ -55,6 +55,13 @@ export default function GalleryPage() {
 
   const handleArtworkOpen = useCallback((art: GalleryArtworkMeta) => {
     setLightbox(toLightboxPayload(art));
+  }, []);
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("view") === "world" || q.get("mode") === "world") {
+      setViewMode("world");
+    }
   }, []);
 
   return (
