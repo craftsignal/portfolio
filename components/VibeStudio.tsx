@@ -25,7 +25,14 @@ function mapInputToDisplayChars(raw: string): string[] {
   return trimmed.split("");
 }
 
-export default function VibeStudio() {
+export type VibeStudioVariant = "card" | "page";
+
+type VibeStudioProps = {
+  /** `card` = home grid tile; `page` = dedicated route with more room */
+  variant?: VibeStudioVariant;
+};
+
+export default function VibeStudio({ variant = "card" }: VibeStudioProps) {
   const [inputValue, setInputValue] = useState("AFCE");
   const exportRef = useRef<HTMLDivElement | null>(null);
   /** `loading` until we probe the sprite URL (avoids flash + wrong blend). */
@@ -40,6 +47,7 @@ export default function VibeStudio() {
     img.src = SPRITE_URL;
   }, []);
 
+  const isPage = variant === "page";
   const chars = mapInputToDisplayChars(inputValue);
 
   const handleSave = useCallback(async () => {
@@ -62,12 +70,16 @@ export default function VibeStudio() {
     }
   }, []);
 
+  const rootClass = isPage
+    ? "relative z-[1] isolate flex min-h-[min(72vh,560px)] flex-col overflow-hidden rounded-2xl border border-dashed border-white/20 bg-white/[0.05] p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] sm:p-6"
+    : "relative z-[1] isolate flex aspect-[4/3] min-h-[200px] flex-col overflow-hidden rounded-2xl border border-dashed border-white/20 bg-white/[0.05] p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] sm:min-h-[220px] sm:p-4";
+
   return (
-    <div
-      className={`relative z-[1] isolate flex aspect-[4/3] min-h-[200px] flex-col overflow-hidden rounded-2xl border border-dashed border-white/20 bg-white/[0.05] p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] sm:min-h-[220px] sm:p-4 ${instrumentSans}`}
-    >
+    <div className={`${rootClass} ${instrumentSans}`}>
       <div ref={exportRef} className="flex min-h-0 flex-1 flex-col gap-3">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-500">
+        <p
+          className={`font-medium uppercase tracking-[0.2em] text-neutral-500 ${isPage ? "text-xs" : "text-[10px]"}`}
+        >
           3D Text Studio
         </p>
 
@@ -91,7 +103,7 @@ export default function VibeStudio() {
                       return (
                         <span
                           key={`${i}-${ch}`}
-                          className="flex h-12 w-8 items-center justify-center rounded border border-dashed border-white/15 text-xs text-neutral-500 sm:h-14 sm:w-9"
+                          className={`flex items-center justify-center rounded border border-dashed border-white/15 text-neutral-500 ${isPage ? "h-16 w-10 text-sm sm:h-[4.5rem] sm:w-12" : "h-12 w-8 text-xs sm:h-14 sm:w-9"}`}
                           title="Only A, F, C, E are in the sprite sheet"
                         >
                           {ch}
@@ -101,7 +113,11 @@ export default function VibeStudio() {
                     return (
                       <div
                         key={`${i}-${ch}-${idx}`}
-                        className="h-12 w-10 shrink-0 sm:h-14 sm:w-11"
+                        className={
+                          isPage
+                            ? "h-16 w-[3.25rem] shrink-0 sm:h-[4.5rem] sm:w-14"
+                            : "h-12 w-10 shrink-0 sm:h-14 sm:w-11"
+                        }
                         style={{
                           backgroundImage: `url(${SPRITE_URL})`,
                           backgroundRepeat: "no-repeat",
@@ -115,7 +131,9 @@ export default function VibeStudio() {
                   })
                 : null}
               {assetStatus === "loading" ? (
-                <div className="flex h-14 items-center gap-1.5 text-[11px] text-neutral-500">
+                <div
+                  className={`flex items-center gap-1.5 text-neutral-500 ${isPage ? "h-20 text-sm" : "h-14 text-[11px]"}`}
+                >
                   <span className="inline-block size-2 animate-pulse rounded-full bg-neutral-500" />
                   Loading sprite…
                 </div>
