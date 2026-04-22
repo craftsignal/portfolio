@@ -9,7 +9,8 @@ const instrumentSans =
 /** Order of letters in `combined_letters.jpg` (left → right, 4-in-1 strip). */
 const BALLOON_SPRITE_CHARS = ["A", "F", "C", "E"] as const;
 
-const SPRITE_URL = "/assets/3d-letters/balloon/combined_letters.jpg";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH?.replace(/\/$/, "") ?? "";
+const SPRITE_URL = `${basePath}/assets/3d-letters/balloon/combined_letters.jpg`;
 
 function spriteBackgroundPosition(index: number): string {
   const n = BALLOON_SPRITE_CHARS.length;
@@ -27,13 +28,15 @@ function mapInputToDisplayChars(raw: string): string[] {
 export default function VibeStudio() {
   const [inputValue, setInputValue] = useState("AFCE");
   const exportRef = useRef<HTMLDivElement | null>(null);
-  const [imgError, setImgError] = useState(false);
+  /** `loading` until we probe the sprite URL (avoids flash + wrong blend). */
+  const [assetStatus, setAssetStatus] = useState<"loading" | "ok" | "missing">("loading");
   const labelId = useId();
 
   useEffect(() => {
+    setAssetStatus("loading");
     const img = new Image();
-    img.onload = () => setImgError(false);
-    img.onerror = () => setImgError(true);
+    img.onload = () => setAssetStatus("ok");
+    img.onerror = () => setAssetStatus("missing");
     img.src = SPRITE_URL;
   }, []);
 
@@ -61,7 +64,7 @@ export default function VibeStudio() {
 
   return (
     <div
-      className={`relative flex aspect-[4/3] min-h-[200px] flex-col rounded-2xl border border-dashed border-white/20 bg-white/[0.05] p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] sm:min-h-[220px] sm:p-4 ${instrumentSans}`}
+      className={`relative z-[1] isolate flex aspect-[4/3] min-h-[200px] flex-col overflow-hidden rounded-2xl border border-dashed border-white/20 bg-white/[0.05] p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] sm:min-h-[220px] sm:p-4 ${instrumentSans}`}
     >
       <div ref={exportRef} className="flex min-h-0 flex-1 flex-col gap-3">
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-500">
@@ -69,52 +72,71 @@ export default function VibeStudio() {
         </p>
 
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2">
+          {/* Isolate blend so it does not composite with sibling grid cards */}
           <div
-            className="flex flex-wrap items-end justify-center gap-1.5 sm:gap-2"
-            style={{ mixBlendMode: "multiply" }}
-            aria-label="Balloon letter preview"
+            className="max-w-full rounded-xl bg-black px-3 py-3"
+            style={{ isolation: "isolate" }}
           >
-            {chars.map((ch, i) => {
-              const idx = BALLOON_SPRITE_CHARS.indexOf(
-                ch as (typeof BALLOON_SPRITE_CHARS)[number],
-              );
-              if (idx < 0) {
-                return (
-                  <span
-                    key={`${i}-${ch}`}
-                    className="flex h-12 w-8 items-center justify-center rounded border border-dashed border-white/15 text-xs text-neutral-500 sm:h-14 sm:w-9"
-                    title="Only A, F, C, E are in the sprite sheet"
-                  >
-                    {ch}
-                  </span>
-                );
-              }
-              return (
-                <div
-                  key={`${i}-${ch}-${idx}`}
-                  className="h-12 w-10 shrink-0 bg-transparent sm:h-14 sm:w-11"
-                  style={{
-                    backgroundImage: imgError ? "none" : `url(${SPRITE_URL})`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: `${BALLOON_SPRITE_CHARS.length * 100}% 100%`,
-                    backgroundPosition: spriteBackgroundPosition(idx),
-                  }}
-                  role="img"
-                  aria-label={`Balloon letter ${ch}`}
-                />
-              );
-            })}
+            <div
+              className="flex flex-wrap items-end justify-center gap-1.5 sm:gap-2"
+              style={{ mixBlendMode: "multiply" }}
+              aria-label="Balloon letter preview"
+            >
+              {assetStatus === "ok"
+                ? chars.map((ch, i) => {
+                    const idx = BALLOON_SPRITE_CHARS.indexOf(
+                      ch as (typeof BALLOON_SPRITE_CHARS)[number],
+                    );
+                    if (idx < 0) {
+                      return (
+                        <span
+                          key={`${i}-${ch}`}
+                          className="flex h-12 w-8 items-center justify-center rounded border border-dashed border-white/15 text-xs text-neutral-500 sm:h-14 sm:w-9"
+                          title="Only A, F, C, E are in the sprite sheet"
+                        >
+                          {ch}
+                        </span>
+                      );
+                    }
+                    return (
+                      <div
+                        key={`${i}-${ch}-${idx}`}
+                        className="h-12 w-10 shrink-0 sm:h-14 sm:w-11"
+                        style={{
+                          backgroundImage: `url(${SPRITE_URL})`,
+                          backgroundRepeat: "no-repeat",
+                          backgroundSize: `${BALLOON_SPRITE_CHARS.length * 100}% 100%`,
+                          backgroundPosition: spriteBackgroundPosition(idx),
+                        }}
+                        role="img"
+                        aria-label={`Balloon letter ${ch}`}
+                      />
+                    );
+                  })
+                : null}
+              {assetStatus === "loading" ? (
+                <div className="flex h-14 items-center gap-1.5 text-[11px] text-neutral-500">
+                  <span className="inline-block size-2 animate-pulse rounded-full bg-neutral-500" />
+                  Loading sprite…
+                </div>
+              ) : null}
+            </div>
           </div>
-          {imgError ? (
-            <p className="text-center text-[11px] text-neutral-500">
+          {assetStatus === "missing" ? (
+            <p className="max-w-[16rem] text-center text-[11px] leading-relaxed text-neutral-500">
               Add{" "}
               <code className="rounded bg-white/10 px-1 py-0.5 text-neutral-300">
                 combined_letters.jpg
               </code>{" "}
-              under{" "}
+              to{" "}
               <code className="rounded bg-white/10 px-1 py-0.5 text-neutral-300">
                 public/assets/3d-letters/balloon/
-              </code>
+              </code>{" "}
+              in your repo, then{" "}
+              <code className="whitespace-nowrap rounded bg-white/10 px-1 py-0.5 text-neutral-300">
+                git add → commit → push main
+              </code>{" "}
+              so GitHub Pages can serve it (local-only files never reach tians.space).
             </p>
           ) : null}
         </div>

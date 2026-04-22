@@ -4,7 +4,7 @@ export default function VibeCodingGrid() {
   const placeholders = Array.from({ length: 6 }, (_, i) => i);
 
   return (
-    <div className="w-full max-w-5xl">
+    <div className="relative z-10 w-full max-w-5xl">
       <h2 className="text-center font-serif text-2xl font-normal italic text-neutral-200 sm:text-3xl md:text-[2rem]">
         Current Vibe Coding Experiments
       </h2>
