@@ -35,6 +35,7 @@ const CASES: CaseStudy[] = [
     tags: ["Mobile", "Design System"],
     img: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1600&q=80",
     launched: true,
+    href: "/case-studies/enhancing-support-reduce-returns-churn",
   },
   {
     title: "Elevating proactive safety for 5 million users",

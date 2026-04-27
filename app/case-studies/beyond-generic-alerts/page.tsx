@@ -22,7 +22,9 @@ const sectionHeadingLargeClass = `${instrument} text-[48px] font-normal italic l
 
 const narrativeBodyClass = `${instrumentSans} text-[20px] font-normal leading-[1.6] text-black`;
 
-const impactStatClass = `${instrument} text-[clamp(2.25rem,5vw,3rem)] font-normal not-italic leading-[1.05] tracking-[-0.02em] text-neutral-950`;
+const impactStatClass = `${instrument} text-[clamp(2.75rem,6vw,3.75rem)] font-normal not-italic leading-[1.05] tracking-[-0.02em] text-neutral-950`;
+
+const accomplishmentListClass = `${instrumentSans} mt-6 list-outside list-disc space-y-4 pl-5 text-[20px] font-normal leading-[1.6] text-black marker:text-[0.45em] lg:mt-8`;
 
 /** Level 2 — Instrument Sans Bold Italic 24px */
 const subtitleClass = `${instrumentSans} text-[24px] font-bold italic leading-[1.3] text-black`;
@@ -214,46 +216,73 @@ export default function BeyondGenericAlertsCaseStudy() {
           </section>
 
           <section
-            id="the-problem"
-            className="mt-[80px] w-full max-w-none scroll-mt-24 text-left"
+            className="mt-[80px] w-full max-w-none text-left"
+            aria-label="The problem, accomplishments, and impact"
           >
-            <h2 className={sectionHeadingLargeClass}>The Problem</h2>
-            <p className={`${narrativeBodyClass} mt-8 max-w-[800px]`}>
-              Arlo users receive dozens of camera notifications per day&mdash;70% of
-              these alerts lack context, leaving users confused about whether they
-              require immediate attention. As device adoption grows and expectations
-              for smart home security rise, users increasingly struggle to quickly
-              assess what&rsquo;s happening in their environment. This leads to
-              fatigue, slower response times, and underutilization of subscription
-              features.
-            </p>
-          </section>
+            {/* Row 1: Problem | Accomplished (matches design: two columns) */}
+            <div className="grid grid-cols-1 gap-y-14 lg:grid-cols-2 lg:items-start lg:gap-x-10 lg:gap-y-0 xl:gap-x-16">
+              <div id="the-problem" className="min-w-0 scroll-mt-24">
+                <h2 className={sectionHeadingLargeClass}>The Problem</h2>
+                <p
+                  className={`${narrativeBodyClass} mt-6 max-w-none lg:mt-8`}
+                >
+                  Arlo users receive dozens of camera notifications per day&mdash;70%
+                  of these alerts lack context, leaving users confused about whether
+                  they require immediate attention. As device adoption grows and
+                  expectations for smart home security rise, users increasingly struggle
+                  to quickly assess what&rsquo;s happening in their environment. This
+                  leads to fatigue, slower response times, and underutilization of
+                  subscription features.
+                </p>
+              </div>
+              <div id="what-i-accomplished" className="min-w-0 scroll-mt-24">
+                <h2 className={sectionHeadingLargeClass}>What I Accomplished</h2>
+                <ul className={accomplishmentListClass}>
+                  <li>
+                    Designed an AI-powered video captioning system integrated into the
+                    Arlo app, summarizing key events captured by video-enabled devices.
+                  </li>
+                  <li>
+                    Integrates with notifications, feeds, and search (without exposing
+                    sensitive data).
+                  </li>
+                  <li>
+                    Led usability testing and iterated based on real user feedback to
+                    optimize discoverability, comprehension, and trust in the captions.
+                  </li>
+                  <li>
+                    Collaborated with AI/ML Engineers to ensure the captions were clear,
+                    relevant, and action-oriented.
+                  </li>
+                </ul>
+              </div>
+            </div>
 
-          <section
-            id="what-i-accomplished"
-            className="mt-[80px] w-full max-w-none scroll-mt-24 text-left"
-          >
-            <h2 className={sectionHeadingLargeClass}>What I Accomplished</h2>
-            <ul
-              className={`${instrumentSans} mt-8 max-w-[800px] list-disc space-y-4 pl-6 text-[20px] font-normal leading-[1.6] text-black`}
-            >
-              <li>
-                Designed an AI-powered video captioning system integrated into the
-                Arlo app, summarizing key events captured by video-enabled devices.
-              </li>
-              <li>
-                Integrates with notifications, feeds, and search (without exposing
-                sensitive data).
-              </li>
-              <li>
-                Led usability testing and iterated based on real user feedback to
-                optimize discoverability, comprehension, and trust in the captions.
-              </li>
-              <li>
-                Collaborated with AI/ML Engineers to ensure the captions were clear,
-                relevant, and action-oriented.
-              </li>
-            </ul>
+            {/* Row 2: Impact heading full width, three metric columns */}
+            <div id="impact" className="mt-16 scroll-mt-24 lg:mt-24">
+              <h2 className={sectionHeadingLargeClass}>Impact</h2>
+              <div className="mt-8 grid grid-cols-1 gap-12 sm:gap-10 md:mt-10 md:grid-cols-3 md:gap-x-8 lg:gap-x-12 xl:gap-x-16">
+                <div className="min-w-0">
+                  <p className={impactStatClass}>22%</p>
+                  <p className={`${narrativeBodyClass} mt-4 max-w-[22rem] md:max-w-none`}>
+                    +22% Premium subscriptions in Q3 - beating our goal by 7%.
+                  </p>
+                </div>
+                <div className="min-w-0">
+                  <p className={impactStatClass}>35%</p>
+                  <p className={`${narrativeBodyClass} mt-4 max-w-[22rem] md:max-w-none`}>
+                    35% more engagement with captioned alerts vs. standard motion
+                    alerts.
+                  </p>
+                </div>
+                <div className="min-w-0">
+                  <p className={impactStatClass}>35%</p>
+                  <p className={`${narrativeBodyClass} mt-4 max-w-[22rem] md:max-w-none`}>
+                    NPS increased by 35% - users loved the clarity.
+                  </p>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section
@@ -275,34 +304,6 @@ export default function BeyondGenericAlertsCaseStudy() {
                   className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.35)_0%,transparent_50%)]"
                   aria-hidden
                 />
-              </div>
-            </div>
-          </section>
-
-          <section
-            id="impact"
-            className="mt-[80px] w-full max-w-none scroll-mt-24 text-left"
-          >
-            <h2 className={sectionHeadingLargeClass}>Impact</h2>
-            <div className="mt-8 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8 xl:gap-10">
-              <div>
-                <p className={impactStatClass}>22%</p>
-                <p className={`${narrativeBodyClass} mt-4`}>
-                  +22% Premium subscriptions in Q3 - beating our goal by 7%.
-                </p>
-              </div>
-              <div>
-                <p className={impactStatClass}>35%</p>
-                <p className={`${narrativeBodyClass} mt-4`}>
-                  35% more engagement with captioned alerts vs. standard motion
-                  alerts.
-                </p>
-              </div>
-              <div>
-                <p className={impactStatClass}>35%</p>
-                <p className={`${narrativeBodyClass} mt-4`}>
-                  NPS increased by 35% - users loved the clarity.
-                </p>
               </div>
             </div>
           </section>

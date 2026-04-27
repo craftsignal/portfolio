@@ -5,7 +5,7 @@ import { useCallback, useRef } from "react";
 
 const spring = { stiffness: 100, damping: 20 };
 
-const FINAL_OUTCOMES_ID = "final-outcomes";
+const DEFAULT_FINAL_SECTION_ID = "final-outcomes";
 
 /** Mirrors homepage MagneticResumeButton hover: shadow lift + brightness. */
 const jumpButtonClassName =
@@ -31,7 +31,14 @@ function LinkIcon({ className }: { className?: string }) {
   );
 }
 
-export default function CaseStudyJumpToFinalButton() {
+type CaseStudyJumpToFinalButtonProps = {
+  /** Element `id` to scroll to (default: final-outcomes on the Arlo case study). */
+  targetId?: string;
+};
+
+export default function CaseStudyJumpToFinalButton({
+  targetId = DEFAULT_FINAL_SECTION_ID,
+}: CaseStudyJumpToFinalButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -74,9 +81,9 @@ export default function CaseStudyJumpToFinalButton() {
 
   const scrollToFinal = useCallback(() => {
     document
-      .getElementById(FINAL_OUTCOMES_ID)
+      .getElementById(targetId)
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
+  }, [targetId]);
 
   return (
     <div
