@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import CaseStudyJumpToFinalButton from "@/components/CaseStudyJumpToFinalButton";
+import CaseStudyReadNextConnect from "@/components/CaseStudyReadNextConnect";
 
 export const metadata: Metadata = {
   title: "Enhancing Support to Reduce Returns and Churn",
@@ -751,59 +752,9 @@ export default function EnhancingSupportCaseStudyPage() {
               </li>
             </ul>
           </section>
-
-          {/* Read next */}
-          <section
-            className="mt-24 border-t border-neutral-300/80 pt-12 md:mt-28 md:pt-14"
-            aria-labelledby="read-next-heading"
-          >
-            <div className="relative flex items-center justify-center">
-              <div className="absolute inset-x-0 top-1/2 h-px bg-neutral-300/90" aria-hidden />
-              <p
-                id="read-next-heading"
-                className={`${instrument} relative bg-[#F2F2F2] px-4 text-center text-sm italic text-neutral-600`}
-              >
-                Read next
-              </p>
-            </div>
-            <h2
-              className={`${instrument} mt-10 text-center text-[clamp(1.75rem,4vw,2.5rem)] font-normal leading-tight`}
-            >
-              <span className="text-[#757575]">More </span>
-              <span className="text-neutral-950">Projects</span>
-            </h2>
-            <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
-              <Link
-                href="/case-studies/beyond-generic-alerts"
-                className="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-neutral-900 shadow-md ring-1 ring-black/5 transition-transform hover:-translate-y-0.5"
-              >
-                <Image
-                  src="/case-studies-ai-event-captions.png"
-                  alt=""
-                  fill
-                  className="object-cover opacity-90 transition-opacity group-hover:opacity-100"
-                  sizes="(max-width:640px) 100vw, 400px"
-                />
-                <span className="absolute left-3 top-3 rounded-full bg-white px-2.5 py-1 text-[10px] font-medium text-neutral-800 shadow-sm">
-                  Launched
-                </span>
-                <span
-                  className={`${instrumentSans} absolute bottom-4 left-4 right-4 text-sm font-medium text-white drop-shadow-md`}
-                >
-                  AI Event Captions
-                </span>
-              </Link>
-              <Link
-                href="/"
-                className="group flex aspect-[4/5] items-center justify-center rounded-3xl border border-dashed border-neutral-300 bg-white/60 text-center shadow-sm transition-colors hover:border-neutral-400 hover:bg-white"
-              >
-                <span className={`${instrumentSans} px-6 text-sm font-medium text-neutral-600`}>
-                  Back to homepage — more case studies
-                </span>
-              </Link>
-            </div>
-          </section>
         </div>
+
+        <CaseStudyReadNextConnect />
       </main>
     </div>
   );
