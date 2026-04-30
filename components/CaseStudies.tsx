@@ -20,6 +20,14 @@ export type CaseStudy = {
 const CASES: CaseStudy[] = [
   {
     title:
+      "Project Genesis: Teaching Arlo's First AI to Actually Listen",
+    tags: ["AI", "Mobile", "Product Design", "Customer Experience"],
+    img: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80",
+    launched: true,
+    href: "/case-studies/project-genesis/",
+  },
+  {
+    title:
       "Beyond Generic Alerts: Boosting Tenant Subscriptions in Offline Communities",
     tags: ["AI", "Growth Strategy"],
     img: "/case-studies-ai-event-captions.png",
@@ -73,7 +81,7 @@ function CaseStudyCard({ item, priority }: { item: CaseStudy; priority?: boolean
         <h2 className="min-w-0 flex-1 text-lg font-medium leading-snug tracking-tight text-neutral-800 md:text-xl">
           {item.title}
         </h2>
-        <div className="flex shrink-0 flex-nowrap items-center gap-2 sm:justify-end">
+        <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end md:flex-nowrap">
           {item.tags.map((tag) => (
             <span
               key={tag}
