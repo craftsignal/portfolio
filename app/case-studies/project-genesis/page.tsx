@@ -21,11 +21,11 @@ const sectionHeadingLargeClass = `${instrument} text-[clamp(2.25rem,5vw,3rem)] f
 const narrativeBodyClass = `${instrumentSans} text-[18px] font-normal leading-[1.65] text-black md:text-[20px]`;
 const subtitleClass = `${instrumentSans} text-[20px] font-bold italic leading-[1.35] text-black md:text-[24px]`;
 const accomplishmentListClass = `${instrumentSans} mt-6 list-outside list-[square] space-y-4 pl-6 text-[18px] font-normal leading-[1.6] text-black marker:text-black md:text-[20px] lg:mt-8`;
-/** Impact row: explicit stacks (layout already loads Instrument * via root + Google Fonts). */
+/** Impact row — numbers: Instrument Serif italic (match section H2 tone); labels: Instrument Sans normal. */
 const impactStatNumberClass =
-  "text-[clamp(2.25rem,5.5vw,3.25rem)] font-normal not-italic leading-[1.05] tracking-[-0.02em] text-neutral-950 [font-family:'Instrument Serif',serif] [font-weight:400]";
+  "text-[clamp(2.25rem,5.5vw,3.25rem)] font-normal italic leading-[1.05] tracking-[-0.02em] text-neutral-950 [font-family:'Instrument Serif',serif]";
 const impactStatDescriptorClass =
-  "mt-4 text-[18px] font-normal leading-[1.65] text-black md:text-[20px] [font-family:'Instrument Sans',sans-serif] [font-weight:400]";
+  "mt-4 text-[18px] font-normal not-italic leading-[1.65] text-black md:text-[20px] [font-family:'Instrument Sans',sans-serif]";
 
 const HERO_IMG =
   "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=2000&q=85";
