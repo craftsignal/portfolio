@@ -310,8 +310,11 @@ export default function ProjectGenesisCaseStudyPage() {
             </div>
           </section>
 
-          <div className="mt-20 grid grid-cols-1 gap-y-14 lg:mt-24 lg:grid-cols-2 lg:items-start lg:gap-x-10 xl:gap-x-16">
-            <section id="the-problem-genesis" className="min-w-0 scroll-mt-28">
+          <div className="mt-20 grid grid-cols-1 gap-y-10 lg:mt-24 lg:grid-cols-2 lg:grid-rows-[auto_auto] lg:items-start lg:gap-x-10 lg:gap-y-12 xl:gap-x-16">
+            <section
+              id="the-problem-genesis"
+              className="min-w-0 scroll-mt-28 lg:col-start-1 lg:row-start-1"
+            >
               <h2 className={sectionHeadingLargeClass}>The Problem</h2>
               <div className={`${narrativeBodyClass} mt-6 space-y-5 lg:mt-8`}>
                 <p>
@@ -347,9 +350,15 @@ export default function ProjectGenesisCaseStudyPage() {
                   Customers had to explain themselves from scratch, every time.
                 </p>
               </div>
+            </section>
 
+            <div
+              className="min-w-0 lg:col-span-2 lg:col-start-1 lg:row-start-2"
+              aria-labelledby="problem-user-quotes-heading"
+            >
               <p
-                className={`${instrumentSans} mt-10 text-[15px] font-semibold uppercase tracking-wide text-neutral-800`}
+                id="problem-user-quotes-heading"
+                className={`${instrumentSans} mt-10 text-[15px] font-semibold uppercase tracking-wide text-neutral-800 lg:mt-0`}
               >
                 User quotes (1-star App Store reviews)
               </p>
@@ -402,9 +411,12 @@ export default function ProjectGenesisCaseStudyPage() {
                   </span>
                 </li>
               </ul>
-            </section>
+            </div>
 
-            <section id="what-i-accomplished-genesis" className="min-w-0 scroll-mt-28">
+            <section
+              id="what-i-accomplished-genesis"
+              className="min-w-0 scroll-mt-28 lg:col-start-2 lg:row-start-1"
+            >
               <h2 className={sectionHeadingLargeClass}>What I Accomplished</h2>
               <ul className={accomplishmentListClass}>
                 <li>
