@@ -21,7 +21,11 @@ const sectionHeadingLargeClass = `${instrument} text-[clamp(2.25rem,5vw,3rem)] f
 const narrativeBodyClass = `${instrumentSans} text-[18px] font-normal leading-[1.65] text-black md:text-[20px]`;
 const subtitleClass = `${instrumentSans} text-[20px] font-bold italic leading-[1.35] text-black md:text-[24px]`;
 const accomplishmentListClass = `${instrumentSans} mt-6 list-outside list-[square] space-y-4 pl-6 text-[18px] font-normal leading-[1.6] text-black marker:text-black md:text-[20px] lg:mt-8`;
-const impactStatClass = `${instrument} text-[clamp(2.25rem,5.5vw,3.25rem)] font-normal not-italic leading-[1.05] tracking-[-0.02em] text-neutral-950`;
+/** Impact row: explicit stacks (layout already loads Instrument * via root + Google Fonts). */
+const impactStatNumberClass =
+  "text-[clamp(2.25rem,5.5vw,3.25rem)] font-normal not-italic leading-[1.05] tracking-[-0.02em] text-neutral-950 [font-family:'Instrument Serif',serif] [font-weight:400]";
+const impactStatDescriptorClass =
+  "mt-4 text-[18px] font-normal leading-[1.65] text-black md:text-[20px] [font-family:'Instrument Sans',sans-serif] [font-weight:400]";
 
 const HERO_IMG =
   "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=2000&q=85";
@@ -349,9 +353,9 @@ export default function ProjectGenesisCaseStudyPage() {
               >
                 User quotes (1-star App Store reviews)
               </p>
-              <ul className="mt-4 space-y-4">
+              <ul className="mt-4 grid list-none grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 p-0">
                 <li
-                  className={`${instrumentSans} rounded-xl border border-neutral-100 bg-[#FAFAFA] p-4 text-[15px] leading-relaxed text-neutral-800`}
+                  className={`${instrumentSans} min-w-0 rounded-xl border border-neutral-100 bg-[#FAFAFA] p-4 text-[15px] leading-relaxed text-neutral-800`}
                 >
                   <span className="text-amber-500" aria-hidden>
                     ★☆☆☆☆
@@ -366,7 +370,7 @@ export default function ProjectGenesisCaseStudyPage() {
                   </span>
                 </li>
                 <li
-                  className={`${instrumentSans} rounded-xl border border-neutral-100 bg-[#FAFAFA] p-4 text-[15px] leading-relaxed text-neutral-800`}
+                  className={`${instrumentSans} min-w-0 rounded-xl border border-neutral-100 bg-[#FAFAFA] p-4 text-[15px] leading-relaxed text-neutral-800`}
                 >
                   <span className="text-amber-500" aria-hidden>
                     ★☆☆☆☆
@@ -382,7 +386,7 @@ export default function ProjectGenesisCaseStudyPage() {
                   </span>
                 </li>
                 <li
-                  className={`${instrumentSans} rounded-xl border border-neutral-100 bg-[#FAFAFA] p-4 text-[15px] leading-relaxed text-neutral-800`}
+                  className={`${instrumentSans} min-w-0 rounded-xl border border-neutral-100 bg-[#FAFAFA] p-4 text-[15px] leading-relaxed text-neutral-800`}
                 >
                   <span className="text-amber-500" aria-hidden>
                     ★☆☆☆☆
@@ -448,26 +452,26 @@ export default function ProjectGenesisCaseStudyPage() {
             </h2>
             <div className="mt-10 grid grid-cols-1 gap-12 sm:gap-10 md:mt-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-x-8">
               <div>
-                <p className={impactStatClass}>28</p>
-                <p className={`${narrativeBodyClass} mt-4`}>
+                <p className={impactStatNumberClass}>28</p>
+                <p className={impactStatDescriptorClass}>
                   AI scenarios designed & tested end-to-end
                 </p>
               </div>
               <div>
-                <p className={impactStatClass}>1.93</p>
-                <p className={`${narrativeBodyClass} mt-4`}>
+                <p className={impactStatNumberClass}>1.93</p>
+                <p className={impactStatDescriptorClass}>
                   Avg guardrails score / 2.0 in pre-Alpha
                 </p>
               </div>
               <div>
-                <p className={impactStatClass}>≥ 95%</p>
-                <p className={`${narrativeBodyClass} mt-4`}>
+                <p className={impactStatNumberClass}>≥ 95%</p>
+                <p className={impactStatDescriptorClass}>
                   Target agent handoff success rate
                 </p>
               </div>
               <div>
-                <p className={impactStatClass}>~200</p>
-                <p className={`${narrativeBodyClass} mt-4`}>
+                <p className={impactStatNumberClass}>~200</p>
+                <p className={impactStatDescriptorClass}>
                   Alpha testers in controlled UAT
                 </p>
               </div>
