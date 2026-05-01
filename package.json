@@ -5,12 +5,13 @@
   "homepage": "https://tians.space",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "dev:clean": "rm -rf .next && next dev",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "predeploy": "next build",
+    "predeploy": "next build --webpack",
     "deploy": "gh-pages -d out -t",
-    "deploy:github-io": "NEXT_PUBLIC_BASE_PATH=/portfolio next build && gh-pages -d out -t"
+    "deploy:github-io": "NEXT_PUBLIC_BASE_PATH=/portfolio next build --webpack && gh-pages -d out -t"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
