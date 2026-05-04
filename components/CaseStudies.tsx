@@ -47,8 +47,10 @@ const CASES: CaseStudy[] = [
     img: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1600&q=80",
     launched: true,
     href: "/case-studies/enhancing-support-reduce-returns-churn",
-    htmlCoverDark: "/case-studies/support-cover-dark.html",
-    htmlCoverLight: "/case-studies/support-cover-light.html",
+    htmlCoverDark:
+      "/case-studies/support-cover-dark_files/Case%20Study%20Cover.html",
+    htmlCoverLight:
+      "/case-studies/support-cover-light_files/Case%20Study%20Cover%20Light%20Mode.html",
   },
   {
     title: "Elevating proactive safety for 5 million users",
