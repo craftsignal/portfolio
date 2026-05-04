@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import HtmlCoverCaseStudyCard from "./HtmlCoverCaseStudyCard";
 import ParallaxCaseStudyCard from "./ParallaxCaseStudyCard";
 import SpotlightCard from "./SpotlightCard";
 
@@ -15,6 +16,8 @@ export type CaseStudy = {
   parallaxCover?: boolean;
   coverTitle?: string;
   coverDescription?: string;
+  htmlCoverDark?: string;
+  htmlCoverLight?: string;
 };
 
 const CASES: CaseStudy[] = [
@@ -44,6 +47,8 @@ const CASES: CaseStudy[] = [
     img: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1600&q=80",
     launched: true,
     href: "/case-studies/enhancing-support-reduce-returns-churn",
+    htmlCoverDark: "/case-studies/support-cover-dark.html",
+    htmlCoverLight: "/case-studies/support-cover-light.html",
   },
   {
     title: "Elevating proactive safety for 5 million users",
@@ -123,6 +128,12 @@ export default function CaseStudies() {
         {CASES.map((item, index) =>
           item.parallaxCover ? (
             <ParallaxCaseStudyCard
+              key={item.title}
+              item={item}
+              priority={index === 0}
+            />
+          ) : item.htmlCoverDark && item.htmlCoverLight ? (
+            <HtmlCoverCaseStudyCard
               key={item.title}
               item={item}
               priority={index === 0}
