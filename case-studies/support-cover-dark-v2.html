@@ -1,0 +1,588 @@
+<!doctype html>
+<html data-src-ver="411b896c" lang="en" data-om-id="411b896c:0">
+<head data-om-id="411b896c:1">
+
+<meta charset="utf-8" data-om-id="411b896c:2" />
+<title>Case Study Cover — Enhancing Support</title>
+<style>
+  :root {
+    --teal:        #0b5c7a;
+    --teal-deep:   #084a63;
+    --teal-glow:   #1a8eb3;
+    --teal-soft:   rgba(26, 142, 179, .55);
+    --ink:         #08090b;
+    --ink-2:       #0e1014;
+    --text:        #f3f5f8;
+    --text-dim:    rgba(243, 245, 248, .68);
+    --text-mute:   rgba(243, 245, 248, .42);
+    --hair:        rgba(255,255,255,.10);
+    --hair-2:      rgba(255,255,255,.18);
+    --green:       #8bc34a;
+  }
+
+  html, body { margin: 0; padding: 0; background: #0a0b0d; width: 100%; height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                 "Helvetica Neue", Inter, system-ui, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Stage fills the iframe; avoid 100vw/100vh here — they can be 0 or wrong inside nested iframes */
+  .stage {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: grid; place-items: center;
+    background: inherit;
+  }
+  .canvas {
+    width: 2100px; height: 1576px;
+    position: relative;
+    transform-origin: center center;
+    background:
+      radial-gradient(ellipse 1400px 900px at 70% 35%, rgba(11,92,122,.18), transparent 65%),
+      radial-gradient(ellipse 1100px 800px at 20% 80%, rgba(20,40,55,.35), transparent 70%),
+      linear-gradient(180deg, #0a0c10 0%, #07080b 50%, #0a0d11 100%);
+    overflow: hidden;
+  }
+
+  /* --- ambient grain / star dust --- */
+  .grain {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+      radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 2px;
+    opacity: .35;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  /* --- floating orbs --- */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(.4px);
+  }
+  .orb--black {
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,.55), rgba(255,255,255,.08) 18%, transparent 32%),
+      radial-gradient(circle at 70% 75%, rgba(255,255,255,.04), transparent 60%),
+      radial-gradient(circle at 50% 50%, #1a1c20 0%, #0c0d10 60%, #050608 100%);
+    box-shadow:
+      inset -40px -60px 120px rgba(0,0,0,.7),
+      inset 30px 30px 80px rgba(255,255,255,.04),
+      0 30px 60px rgba(0,0,0,.5);
+  }
+  .orb--teal {
+    background:
+      radial-gradient(circle at 32% 28%, rgba(180,230,250,.85), rgba(140,210,235,.18) 22%, transparent 38%),
+      radial-gradient(circle at 50% 50%, #1a8eb3 0%, #0b5c7a 50%, #052b3a 100%);
+    box-shadow:
+      inset -30px -50px 100px rgba(0,20,30,.7),
+      inset 25px 25px 70px rgba(120,200,230,.20),
+      0 20px 60px rgba(11,92,122,.55),
+      0 0 80px rgba(26,142,179,.25);
+  }
+  .orb--ring {
+    border-radius: 50%;
+    background: transparent;
+    border: 8px solid #14171c;
+    box-shadow:
+      inset 0 0 30px rgba(0,0,0,.8),
+      inset 0 0 4px rgba(255,255,255,.15),
+      0 25px 50px rgba(0,0,0,.5);
+    /* fake torus look using gradient on top */
+  }
+  .orb--ring::before {
+    content: ""; position: absolute; inset: -2px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), transparent 25%);
+    pointer-events: none;
+  }
+
+  /* layout positions for orbs */
+  .o1 { width: 320px; height: 320px; left: -90px;   top: 120px; }
+  .o2 { width: 180px; height: 180px; left:  60px;   top: 1180px; }
+  .o3 { width: 90px;  height: 90px;  left:  720px;  top: 60px; }
+  .o4 { width: 240px; height: 240px; right: -80px;  top: 90px; }
+  .o5 { width: 380px; height: 380px; right: -160px; top: 980px; }
+  .o6 { width: 130px; height: 130px; right: 360px;  top: 1280px; }
+  .o7 { width: 60px;  height: 60px;  left:  900px;  top: 1380px; }
+  .o8 { width: 220px; height: 220px; left:  1080px; top: -80px; }
+  .o9 { width: 70px;  height: 70px;  right: 220px;  top: 460px; }
+  .oA { width: 150px; height: 150px; left:  300px;  top: 1380px; }
+
+  /* --- glass card --- */
+  .glass {
+    position: absolute;
+    left: 100px; top: 110px;
+    width: 1900px; height: 1356px;
+    border-radius: 36px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.02) 50%, rgba(255,255,255,.05) 100%);
+    backdrop-filter: blur(40px) saturate(1.2);
+    -webkit-backdrop-filter: blur(40px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.18),
+      inset 0 -1px 0 rgba(255,255,255,.04),
+      0 40px 100px rgba(0,0,0,.5),
+      0 8px 30px rgba(0,0,0,.4);
+    overflow: hidden;
+  }
+  /* highlight sweep on glass */
+  .glass::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 900px 600px at 80% 20%, rgba(26,142,179,.18), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 15% 90%, rgba(255,255,255,.06), transparent 60%);
+    pointer-events: none;
+  }
+  .glass::after {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  }
+
+  /* --- card content grid --- */
+  .grid {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: 980px 1fr;
+    gap: 80px;
+    padding: 90px;
+    z-index: 2;
+  }
+
+  /* --- header strip (top of glass) --- */
+  .header {
+    position: absolute;
+    top: 44px; left: 90px; right: 90px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 3;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 18px; font-weight: 600; letter-spacing: .02em;
+    color: rgba(255,255,255,.85);
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, #1a8eb3, #0b5c7a);
+    display: grid; place-items: center;
+    box-shadow: 0 4px 16px rgba(26,142,179,.4), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .brand-mark svg { display: block; }
+  .brand-url { color: var(--text-mute); font-weight: 400; font-size: 16px; }
+  .brand-sep { color: var(--text-mute); }
+
+  .crumb {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 15px;
+    color: var(--text-mute);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .crumb-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+  }
+
+  /* --- left: device showcase --- */
+  .showcase {
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .showcase-stack {
+    position: relative;
+    width: 100%; height: 100%;
+  }
+  /* original screenshot — small, tilted, floating behind */
+  .shot-old {
+    position: absolute;
+    width: 440px; height: auto;
+    left: -30px; bottom: 60px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow:
+      0 30px 60px rgba(0,0,0,.65),
+      0 0 0 1px rgba(255,255,255,.08);
+    transform: rotate(-5deg);
+    opacity: .82;
+  }
+  .shot-old img { display: block; width: 100%; height: auto; }
+  .shot-old-label {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(15,17,22,.85);
+    backdrop-filter: blur(8px);
+    color: rgba(255,255,255,.78);
+    font-size: 11px; font-weight: 500;
+    padding: 5px 11px; border-radius: 999px;
+    letter-spacing: .1em; text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,.14);
+  }
+  /* new screenshot — large, foreground hero */
+  .shot-new {
+    position: absolute;
+    width: 1020px; height: auto;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    border-radius: 22px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow:
+      0 60px 120px rgba(0,0,0,.7),
+      0 0 0 1px rgba(255,255,255,.12),
+      0 0 100px rgba(26,142,179,.22);
+  }
+  .shot-new img { display: block; width: 100%; height: auto; }
+  /* "Launched" badge — pinned to the top-left corner of the glass card */
+  .launched-badge {
+    position: absolute;
+    top: 38px; left: 80px;
+    z-index: 5;
+    background: linear-gradient(135deg, rgba(26,142,179,.98), rgba(11,92,122,.98));
+    color: #fff;
+    font-size: 14px; font-weight: 600;
+    padding: 9px 18px; border-radius: 999px;
+    letter-spacing: .14em; text-transform: uppercase;
+    box-shadow:
+      0 12px 28px rgba(26,142,179,.5),
+      inset 0 1px 0 rgba(255,255,255,.35),
+      0 0 0 1px rgba(255,255,255,.08);
+  }
+
+  /* --- right: content panel --- */
+  .content {
+    align-self: center;
+    padding-top: 40px;
+    padding-right: 20px;
+  }
+
+  .tag-row {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .tag {
+    padding: 9px 18px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,.85);
+    backdrop-filter: blur(10px);
+    letter-spacing: .01em;
+  }
+  .tag--accent {
+    background: linear-gradient(135deg, rgba(26,142,179,.35), rgba(11,92,122,.25));
+    border-color: rgba(26,142,179,.45);
+    color: #d4ecf5;
+  }
+
+  h1 {
+    font-size: 78px;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+    margin: 0 0 32px 0;
+    color: #fff;
+    text-wrap: balance;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #b8e4f2 0%, #5db1cc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .blurb {
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin: 0 0 56px 0;
+    max-width: 880px;
+    text-wrap: pretty;
+  }
+
+  /* metrics */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255,255,255,.10);
+  }
+  .metric {
+    position: relative;
+  }
+  .metric-num {
+    font-size: 76px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 14px;
+    background: linear-gradient(180deg, #ffffff 0%, #c9d4dc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .metric-num .unit {
+    font-size: 44px;
+    font-weight: 500;
+    margin-left: 4px;
+    color: rgba(255,255,255,.6);
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+  }
+  .metric-desc {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    max-width: 320px;
+  }
+
+  /* role meta block */
+  .meta-row {
+    margin-top: 56px;
+    display: flex; gap: 48px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255,255,255,.10);
+  }
+  .meta-item .meta-label {
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 6px;
+  }
+  .meta-item .meta-val {
+    font-size: 16px;
+    color: rgba(255,255,255,.92);
+    font-weight: 500;
+  }
+
+  /* footer of glass: index + tian.space */
+  .footer {
+    position: absolute;
+    left: 90px; right: 90px; bottom: 44px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 3;
+    color: var(--text-mute);
+    font-size: 14px;
+    letter-spacing: .06em;
+  }
+  .footer-index {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .index-num {
+    font-size: 16px; font-weight: 600; color: rgba(255,255,255,.9);
+    font-feature-settings: "tnum";
+  }
+  .index-bar {
+    width: 80px; height: 2px; background: rgba(255,255,255,.15); border-radius: 2px;
+    position: relative; overflow: hidden;
+  }
+  .index-bar::after {
+    content: ""; position: absolute; inset: 0;
+    width: 50%;
+    background: linear-gradient(90deg, #1a8eb3, #5db1cc);
+  }
+  .footer-cta {
+    display: flex; align-items: center; gap: 10px;
+    color: rgba(255,255,255,.7);
+  }
+  .footer-cta svg { display: block; }
+
+  /* Open case study chip — bottom-left of glass card */
+  .scroll-chip {
+    position: absolute;
+    left: 90px; bottom: 90px;
+    width: 380px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 28px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    z-index: 3;
+    color: rgba(255,255,255,.92);
+    font-size: 35px;
+    font-weight: 500;
+    letter-spacing: .01em;
+  }
+
+  /* a tiny corner readout, like ref #3 had Cortex labels */
+  .corner-tag {
+    position: absolute;
+    z-index: 3;
+    color: rgba(255,255,255,.55);
+    font-size: 13px;
+    letter-spacing: .06em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .corner-tag-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,.5);
+  }
+  .corner-tag .num {
+    color: rgba(255,255,255,.4);
+    font-feature-settings: "tnum";
+    font-size: 12px;
+    margin-left: 4px;
+  }
+  .ct-1 { left: 130px; top: 280px; }
+  .ct-2 { right: 280px; top: 250px; }
+</style>
+</head>
+<body data-om-id="411b896c:3">
+
+<div class="stage" id="stage" style="font-family: system-ui" data-om-id="411b896c:4">
+  <div class="canvas" id="canvas" data-screen-label="01 Cover" data-om-id="411b896c:5">
+
+    <!-- ambient grain -->
+    <div class="grain" data-om-id="411b896c:6"></div>
+
+    <!-- background orbs (behind glass) -->
+    <div class="orb orb--black o1" data-om-id="411b896c:7"></div>
+    <div class="orb orb--teal  o4" data-om-id="411b896c:8"></div>
+    <div class="orb orb--black o5" data-om-id="411b896c:9"></div>
+    <div class="orb orb--teal  o3" data-om-id="411b896c:10"></div>
+    <div class="orb orb--black o8" data-om-id="411b896c:11"></div>
+
+    <!-- glass card -->
+    <div class="glass" data-om-id="411b896c:12">
+
+      <!-- Launched badge pinned to top-left corner of glass card -->
+      <div class="launched-badge" style="background-position: center top" data-om-id="411b896c:13">Launched</div>
+
+      <!-- header strip removed -->
+
+      <!-- decorative corner labels -->
+      <div class="corner-tag ct-1" style="display:none" data-om-id="411b896c:14">
+        <span class="corner-tag-dot" data-om-id="411b896c:15"></span>
+        <span data-om-id="411b896c:16">Support</span>
+        <span class="num" data-om-id="411b896c:17">01.04</span>
+      </div>
+      <div class="corner-tag ct-2" style="display:none" data-om-id="411b896c:18">
+        <span class="corner-tag-dot" data-om-id="411b896c:19"></span>
+        <span data-om-id="411b896c:20">Self-Serve</span>
+        <span class="num" data-om-id="411b896c:21">02.07</span>
+      </div>
+
+      <!-- foreground orbs intersecting glass -->
+      <div class="orb orb--black o2" style="position:absolute;" data-om-id="411b896c:22"></div>
+      <div class="orb orb--teal  o6" style="position:absolute;" data-om-id="411b896c:23"></div>
+      <div class="orb orb--black o9" style="position:absolute;" data-om-id="411b896c:24"></div>
+      <div class="orb orb--black o7" style="position:absolute;" data-om-id="411b896c:25"></div>
+      <div class="orb orb--teal  oA" style="position:absolute;" data-om-id="411b896c:26"></div>
+
+      <!-- main grid -->
+      <div class="grid" data-om-id="411b896c:27">
+
+        <!-- LEFT: showcase -->
+        <div class="showcase" data-om-id="411b896c:28">
+          <div class="showcase-stack" data-om-id="411b896c:29">
+            <!-- new version, larger, foreground hero -->
+            <div class="shot-new" data-om-id="411b896c:30">
+              <img src="assets/support-center-new.png" alt="Redesigned Arlo Support Center" data-om-id="411b896c:31" />
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT: content -->
+        <div class="content" data-om-id="411b896c:32">
+
+          <div class="tag-row" data-om-id="411b896c:33">
+            <div class="tag tag--accent" data-om-id="411b896c:34">AI</div>
+            <div class="tag" data-om-id="411b896c:35">Web</div>
+            <div class="tag" data-om-id="411b896c:36">Mobile</div>
+            <div class="tag" data-om-id="411b896c:37">Design System</div>
+            <div class="tag" data-om-id="411b896c:38">Customer Experience</div>
+          </div>
+
+          <h1 style="font-family: &quot;SF Pro Display&quot;" data-om-id="411b896c:39">Helping Users Get Unstuck <span class="accent" style="font-family: &quot;Helvetica Neue&quot;" data-om-id="411b896c:40">Before They Give Up</span></h1>
+
+          <p class="blurb" data-om-id="411b896c:41">
+            Designed an AI-first support experience for Arlo — where intelligent guidance helps customers troubleshoot on their own, and seamlessly hands off to chat or a live callback when they need a human, stopping returns before they happen.
+          </p>
+
+          <div class="metrics" data-om-id="411b896c:42">
+            <div class="metric" data-om-id="411b896c:43">
+              <div class="metric-num" data-om-id="411b896c:44">99.96%</div>
+              <div class="metric-desc" data-om-id="411b896c:45">Of customers reached when they requested a callback.</div>
+            </div>
+            <div class="metric" data-om-id="411b896c:46">
+              <div class="metric-num" data-om-id="411b896c:47">&gt;59%</div>
+              <div class="metric-desc" data-om-id="411b896c:48">Net Promoter Score - customers who'd recommend Arlo after getting support.</div>
+            </div>
+          </div>
+
+          <div class="meta-row" data-om-id="411b896c:49">
+            <div class="meta-item" data-om-id="411b896c:50">
+              <div class="meta-label" data-om-id="411b896c:51">Role</div>
+              <div class="meta-val" data-om-id="411b896c:52">Lead Product Designer</div>
+            </div>
+            <div class="meta-item" data-om-id="411b896c:53">
+              <div class="meta-label" data-om-id="411b896c:54">Timeline</div>
+              <div class="meta-val" data-om-id="411b896c:55">3 months · 2025</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Open case study chip -->
+      <div class="scroll-chip" style="width: 320px" data-om-id="411b896c:56">
+        <span style="font-size: 28px" data-om-id="411b896c:57">Open case study ↗</span>
+      </div>
+
+      <!-- footer removed -->
+
+    </div><!-- /.glass -->
+
+  </div><!-- /.canvas -->
+</div>
+
+<script>
+  // Scale the 2100x1576 canvas to fit any viewport while preserving aspect.
+  (function () {
+    const stage  = document.getElementById('stage');
+    const canvas = document.getElementById('canvas');
+    const W = 2100, H = 1576;
+    function fit() {
+      const w = stage.clientWidth || window.innerWidth;
+      const h = stage.clientHeight || window.innerHeight;
+      if (!w || !h) return;
+      const sx = w / W;
+      const sy = h / H;
+      const s  = Math.min(sx, sy);
+      canvas.style.transform = 'scale(' + s + ')';
+    }
+    fit();
+    requestAnimationFrame(fit);
+    setTimeout(fit, 100);
+    setTimeout(fit, 500);
+    window.addEventListener('resize', fit);
+    if (typeof ResizeObserver !== 'undefined') {
+      var ro = new ResizeObserver(function () { fit(); });
+      ro.observe(stage);
+    }
+  })();
+</script>
+
+</body>
+</html>
+<script type="application/json" id="__om_srcmap">{"gen":"411b896c","entries":[{"id":"411b896c:0","tag":"html","openStart":16,"attrEnd":31,"openEnd":32,"closeStart":17393,"closeEnd":17400,"textRuns":[[32,33],[12988,12989],[17392,17393]],"parentId":null,"childIds":["411b896c:1","411b896c:3"]},{"id":"411b896c:1","tag":"head","openStart":33,"attrEnd":38,"openEnd":39,"closeStart":12981,"closeEnd":12988,"textRuns":[[39,40],[64,65],[118,119],[12980,12981]],"parentId":"411b896c:0","childIds":["411b896c:2"]},{"id":"411b896c:2","tag":"meta","openStart":40,"attrEnd":61,"openEnd":64,"closeEnd":64,"textRuns":[],"parentId":"411b896c:1","childIds":[]},{"id":"411b896c:3","tag":"body","openStart":12989,"attrEnd":12994,"openEnd":12995,"closeStart":17385,"closeEnd":17392,"textRuns":[[12995,12997],[16874,16876],[17383,17385]],"parentId":"411b896c:0","childIds":["411b896c:4"]},{"id":"411b896c:4","tag":"div","openStart":12997,"attrEnd":13057,"openEnd":13058,"closeStart":16868,"closeEnd":16874,"styleAttr":[13034,13056],"textRuns":[[13058,13061],[16867,16868]],"parentId":"411b896c:3","childIds":["411b896c:5"]},{"id":"411b896c:5","tag":"div","openStart":13061,"attrEnd":13121,"openEnd":13122,"closeStart":16844,"closeEnd":16850,"textRuns":[[13122,13128],[13150,13155],[13180,13186],[13225,13230],[13267,13272],[13309,13314],[13351,13356],[13393,13398],[13435,13441],[13460,13465],[16840,16844]],"parentId":"411b896c:4","childIds":["411b896c:6","411b896c:7","411b896c:8","411b896c:9","411b896c:10","411b896c:11","411b896c:12"]},{"id":"411b896c:6","tag":"div","openStart":13155,"attrEnd":13173,"openEnd":13174,"closeStart":13174,"closeEnd":13180,"textRuns":[],"parentId":"411b896c:5","childIds":[]},{"id":"411b896c:7","tag":"div","openStart":13230,"attrEnd":13260,"openEnd":13261,"closeStart":13261,"closeEnd":13267,"textRuns":[],"parentId":"411b896c:5","childIds":[]},{"id":"411b896c:8","tag":"div","openStart":13272,"attrEnd":13302,"openEnd":13303,"closeStart":13303,"closeEnd":13309,"textRuns":[],"parentId":"411b896c:5","childIds":[]},{"id":"411b896c:9","tag":"div","openStart":13314,"attrEnd":13344,"openEnd":13345,"closeStart":13345,"closeEnd":13351,"textRuns":[],"parentId":"411b896c:5","childIds":[]},{"id":"411b896c:10","tag":"div","openStart":13356,"attrEnd":13386,"openEnd":13387,"closeStart":13387,"closeEnd":13393,"textRuns":[],"parentId":"411b896c:5","childIds":[]},{"id":"411b896c:11","tag":"div","openStart":13398,"attrEnd":13428,"openEnd":13429,"closeStart":13429,"closeEnd":13435,"textRuns":[],"parentId":"411b896c:5","childIds":[]},{"id":"411b896c:12","tag":"div","openStart":13465,"attrEnd":13483,"openEnd":13484,"closeStart":16818,"closeEnd":16824,"textRuns":[[13484,13492],[13555,13562],[13644,13652],[13681,13689],[13722,13729],[13905,13912],[14091,14099],[14142,14149],[14213,14220],[14284,14291],[14355,14362],[14426,14433],[14497,14505],[14523,14530],[16612,16620],[16649,16656],[16780,16788],[16811,16818]],"parentId":"411b896c:5","childIds":["411b896c:13","411b896c:14","411b896c:18","411b896c:22","411b896c:23","411b896c:24","411b896c:25","411b896c:26","411b896c:27","411b896c:56"]},{"id":"411b896c:13","tag":"div","openStart":13562,"attrEnd":13629,"openEnd":13630,"closeStart":13638,"closeEnd":13644,"styleAttr":[13597,13628],"textRuns":[[13630,13638]],"parentId":"411b896c:12","childIds":[]},{"id":"411b896c:14","tag":"div","openStart":13729,"attrEnd":13778,"openEnd":13779,"closeStart":13899,"closeEnd":13905,"styleAttr":[13765,13777],"textRuns":[[13779,13788],[13824,13833],[13853,13862],[13892,13899]],"parentId":"411b896c:12","childIds":["411b896c:15","411b896c:16","411b896c:17"]},{"id":"411b896c:15","tag":"span","openStart":13788,"attrEnd":13816,"openEnd":13817,"closeStart":13817,"closeEnd":13824,"textRuns":[],"parentId":"411b896c:14","childIds":[]},{"id":"411b896c:16","tag":"span","openStart":13833,"attrEnd":13838,"openEnd":13839,"closeStart":13846,"closeEnd":13853,"textRuns":[[13839,13846]],"parentId":"411b896c:14","childIds":[]},{"id":"411b896c:17","tag":"span","openStart":13862,"attrEnd":13879,"openEnd":13880,"closeStart":13885,"closeEnd":13892,"textRuns":[[13880,13885]],"parentId":"411b896c:14","childIds":[]},{"id":"411b896c:18","tag":"div","openStart":13912,"attrEnd":13961,"openEnd":13962,"closeStart":14085,"closeEnd":14091,"styleAttr":[13948,13960],"textRuns":[[13962,13971],[14007,14016],[14039,14048],[14078,14085]],"parentId":"411b896c:12","childIds":["411b896c:19","411b896c:20","411b896c:21"]},{"id":"411b896c:19","tag":"span","openStart":13971,"attrEnd":13999,"openEnd":14000,"closeStart":14000,"closeEnd":14007,"textRuns":[],"parentId":"411b896c:18","childIds":[]},{"id":"411b896c:20","tag":"span","openStart":14016,"attrEnd":14021,"openEnd":14022,"closeStart":14032,"closeEnd":14039,"textRuns":[[14022,14032]],"parentId":"411b896c:18","childIds":[]},{"id":"411b896c:21","tag":"span","openStart":14048,"attrEnd":14065,"openEnd":14066,"closeStart":14071,"closeEnd":14078,"textRuns":[[14066,14071]],"parentId":"411b896c:18","childIds":[]},{"id":"411b896c:22","tag":"div","openStart":14149,"attrEnd":14206,"openEnd":14207,"closeStart":14207,"closeEnd":14213,"styleAttr":[14187,14205],"textRuns":[],"parentId":"411b896c:12","childIds":[]},{"id":"411b896c:23","tag":"div","openStart":14220,"attrEnd":14277,"openEnd":14278,"closeStart":14278,"closeEnd":14284,"styleAttr":[14258,14276],"textRuns":[],"parentId":"411b896c:12","childIds":[]},{"id":"411b896c:24","tag":"div","openStart":14291,"attrEnd":14348,"openEnd":14349,"closeStart":14349,"closeEnd":14355,"styleAttr":[14329,14347],"textRuns":[],"parentId":"411b896c:12","childIds":[]},{"id":"411b896c:25","tag":"div","openStart":14362,"attrEnd":14419,"openEnd":14420,"closeStart":14420,"closeEnd":14426,"styleAttr":[14400,14418],"textRuns":[],"parentId":"411b896c:12","childIds":[]},{"id":"411b896c:26","tag":"div","openStart":14433,"attrEnd":14490,"openEnd":14491,"closeStart":14491,"closeEnd":14497,"styleAttr":[14471,14489],"textRuns":[],"parentId":"411b896c:12","childIds":[]},{"id":"411b896c:27","tag":"div","openStart":14530,"attrEnd":14547,"openEnd":14548,"closeStart":16606,"closeEnd":16612,"textRuns":[[14548,14558],[14581,14590],[14892,14902],[14925,14934],[16599,16606]],"parentId":"411b896c:12","childIds":["411b896c:28","411b896c:32"]},{"id":"411b896c:28","tag":"div","openStart":14590,"attrEnd":14611,"openEnd":14612,"closeStart":14886,"closeEnd":14892,"textRuns":[[14612,14623],[14877,14886]],"parentId":"411b896c:27","childIds":["411b896c:29"]},{"id":"411b896c:29","tag":"div","openStart":14623,"attrEnd":14650,"openEnd":14651,"closeStart":14871,"closeEnd":14877,"textRuns":[[14651,14664],[14709,14722],[14858,14871]],"parentId":"411b896c:28","childIds":["411b896c:30"]},{"id":"411b896c:30","tag":"div","openStart":14722,"attrEnd":14743,"openEnd":14744,"closeStart":14852,"closeEnd":14858,"textRuns":[[14744,14759],[14839,14852]],"parentId":"411b896c:29","childIds":["411b896c:31"]},{"id":"411b896c:31","tag":"img","openStart":14759,"attrEnd":14836,"openEnd":14839,"closeEnd":14839,"textRuns":[],"parentId":"411b896c:30","childIds":[]},{"id":"411b896c:32","tag":"div","openStart":14934,"attrEnd":14954,"openEnd":14955,"closeStart":16593,"closeEnd":16599,"textRuns":[[14955,14967],[15240,15252],[15430,15442],[15722,15734],[16197,16209],[16583,16593]],"parentId":"411b896c:27","childIds":["411b896c:33","411b896c:39","411b896c:41","411b896c:42","411b896c:49"]},{"id":"411b896c:33","tag":"div","openStart":14967,"attrEnd":14987,"openEnd":14988,"closeStart":15234,"closeEnd":15240,"textRuns":[[14988,15001],[15038,15051],[15077,15090],[15119,15132],[15168,15181],[15223,15234]],"parentId":"411b896c:32","childIds":["411b896c:34","411b896c:35","411b896c:36","411b896c:37","411b896c:38"]},{"id":"411b896c:34","tag":"div","openStart":15001,"attrEnd":15029,"openEnd":15030,"closeStart":15032,"closeEnd":15038,"textRuns":[[15030,15032]],"parentId":"411b896c:33","childIds":[]},{"id":"411b896c:35","tag":"div","openStart":15051,"attrEnd":15067,"openEnd":15068,"closeStart":15071,"closeEnd":15077,"textRuns":[[15068,15071]],"parentId":"411b896c:33","childIds":[]},{"id":"411b896c:36","tag":"div","openStart":15090,"attrEnd":15106,"openEnd":15107,"closeStart":15113,"closeEnd":15119,"textRuns":[[15107,15113]],"parentId":"411b896c:33","childIds":[]},{"id":"411b896c:37","tag":"div","openStart":15132,"attrEnd":15148,"openEnd":15149,"closeStart":15162,"closeEnd":15168,"textRuns":[[15149,15162]],"parentId":"411b896c:33","childIds":[]},{"id":"411b896c:38","tag":"div","openStart":15181,"attrEnd":15197,"openEnd":15198,"closeStart":15217,"closeEnd":15223,"textRuns":[[15198,15217]],"parentId":"411b896c:33","childIds":[]},{"id":"411b896c:39","tag":"h1","openStart":15252,"attrEnd":15303,"openEnd":15304,"closeStart":15425,"closeEnd":15430,"styleAttr":[15263,15302],"textRuns":[[15304,15330]],"parentId":"411b896c:32","childIds":["411b896c:40"]},{"id":"411b896c:40","tag":"span","openStart":15330,"attrEnd":15398,"openEnd":15399,"closeStart":15418,"closeEnd":15425,"styleAttr":[15358,15397],"textRuns":[[15399,15418]],"parentId":"411b896c:39","childIds":[]},{"id":"411b896c:41","tag":"p","openStart":15442,"attrEnd":15458,"openEnd":15459,"textRuns":[[15459,15718]],"parentId":"411b896c:32","childIds":[]},{"id":"411b896c:42","tag":"div","openStart":15734,"attrEnd":15754,"openEnd":15755,"closeStart":16191,"closeEnd":16197,"textRuns":[[15755,15768],[15956,15969],[16180,16191]],"parentId":"411b896c:32","childIds":["411b896c:43","411b896c:46"]},{"id":"411b896c:43","tag":"div","openStart":15768,"attrEnd":15787,"openEnd":15788,"closeStart":15950,"closeEnd":15956,"textRuns":[[15788,15803],[15839,15854],[15937,15950]],"parentId":"411b896c:42","childIds":["411b896c:44","411b896c:45"]},{"id":"411b896c:44","tag":"div","openStart":15803,"attrEnd":15826,"openEnd":15827,"closeStart":15833,"closeEnd":15839,"textRuns":[[15827,15833]],"parentId":"411b896c:43","childIds":[]},{"id":"411b896c:45","tag":"div","openStart":15854,"attrEnd":15878,"openEnd":15879,"closeStart":15931,"closeEnd":15937,"textRuns":[[15879,15931]],"parentId":"411b896c:43","childIds":[]},{"id":"411b896c:46","tag":"div","openStart":15969,"attrEnd":15988,"openEnd":15989,"closeStart":16174,"closeEnd":16180,"textRuns":[[15989,16004],[16041,16056],[16161,16174]],"parentId":"411b896c:42","childIds":["411b896c:47","411b896c:48"]},{"id":"411b896c:47","tag":"div","openStart":16004,"attrEnd":16027,"openEnd":16028,"closeStart":16035,"closeEnd":16041,"textRuns":[[16028,16035]],"parentId":"411b896c:46","childIds":[]},{"id":"411b896c:48","tag":"div","openStart":16056,"attrEnd":16080,"openEnd":16081,"closeStart":16155,"closeEnd":16161,"textRuns":[[16081,16155]],"parentId":"411b896c:46","childIds":[]},{"id":"411b896c:49","tag":"div","openStart":16209,"attrEnd":16230,"openEnd":16231,"closeStart":16577,"closeEnd":16583,"textRuns":[[16231,16244],[16399,16412],[16566,16577]],"parentId":"411b896c:32","childIds":["411b896c:50","411b896c:53"]},{"id":"411b896c:50","tag":"div","openStart":16244,"attrEnd":16266,"openEnd":16267,"closeStart":16393,"closeEnd":16399,"textRuns":[[16267,16282],[16316,16331],[16380,16393]],"parentId":"411b896c:49","childIds":["411b896c:51","411b896c:52"]},{"id":"411b896c:51","tag":"div","openStart":16282,"attrEnd":16305,"openEnd":16306,"closeStart":16310,"closeEnd":16316,"textRuns":[[16306,16310]],"parentId":"411b896c:50","childIds":[]},{"id":"411b896c:52","tag":"div","openStart":16331,"attrEnd":16352,"openEnd":16353,"closeStart":16374,"closeEnd":16380,"textRuns":[[16353,16374]],"parentId":"411b896c:50","childIds":[]},{"id":"411b896c:53","tag":"div","openStart":16412,"attrEnd":16434,"openEnd":16435,"closeStart":16560,"closeEnd":16566,"textRuns":[[16435,16450],[16488,16503],[16547,16560]],"parentId":"411b896c:49","childIds":["411b896c:54","411b896c:55"]},{"id":"411b896c:54","tag":"div","openStart":16450,"attrEnd":16473,"openEnd":16474,"closeStart":16482,"closeEnd":16488,"textRuns":[[16474,16482]],"parentId":"411b896c:53","childIds":[]},{"id":"411b896c:55","tag":"div","openStart":16503,"attrEnd":16524,"openEnd":16525,"closeStart":16541,"closeEnd":16547,"textRuns":[[16525,16541]],"parentId":"411b896c:53","childIds":[]},{"id":"411b896c:56","tag":"div","openStart":16656,"attrEnd":16701,"openEnd":16702,"closeStart":16774,"closeEnd":16780,"styleAttr":[16688,16700],"textRuns":[[16702,16711],[16767,16774]],"parentId":"411b896c:12","childIds":["411b896c:57"]},{"id":"411b896c:57","tag":"span","openStart":16711,"attrEnd":16740,"openEnd":16741,"closeStart":16760,"closeEnd":16767,"styleAttr":[16724,16739],"textRuns":[[16741,16760]],"parentId":"411b896c:56","childIds":[]}],"literals":[[17023,17028],[17076,17082],[17286,17292],[17301,17302],[17351,17357]]}</script>
