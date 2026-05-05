@@ -488,18 +488,31 @@
 </div>
 
 <script>
+  // In iframes, initial clientWidth/height can be 0 — defer until layout or scale stays 0 (blank).
   (function () {
     const stage  = document.getElementById('stage');
     const canvas = document.getElementById('canvas');
     const W = 2100, H = 1576;
     function fit() {
-      const sx = stage.clientWidth  / W;
-      const sy = stage.clientHeight / H;
-      const s  = Math.min(sx, sy);
+      if (!stage || !canvas) return;
+      const sw = stage.clientWidth;
+      const sh = stage.clientHeight;
+      if (sw < 1 || sh < 1) return;
+      const s = Math.min(sw / W, sh / H);
       canvas.style.transform = 'scale(' + s + ')';
     }
-    fit();
+    function scheduleFit() {
+      requestAnimationFrame(function () {
+        fit();
+        requestAnimationFrame(fit);
+      });
+    }
+    scheduleFit();
     window.addEventListener('resize', fit);
+    window.addEventListener('load', scheduleFit);
+    if (stage && typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(scheduleFit).observe(stage);
+    }
   })();
 </script>
 
