@@ -231,21 +231,45 @@
     letter-spacing: .1em; text-transform: uppercase;
     border: 1px solid rgba(255,255,255,.14);
   }
-  /* new screenshot — large, foreground hero */
+  /* device showcase — three overlapping phones */
   .shot-new {
     position: absolute;
-    width: 1020px; height: auto;
-    left: 0; top: 50%;
+    width: 900px;
+    left: 30px;
+    top: 50%;
     transform: translateY(-50%);
-    border-radius: 22px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow:
-      0 60px 120px rgba(0,0,0,.7),
-      0 0 0 1px rgba(255,255,255,.12),
-      0 0 100px rgba(26,142,179,.22);
+    height: 680px;
   }
-  .shot-new img { display: block; width: 100%; height: auto; }
+  .phone {
+    position: absolute;
+    width: 260px;
+    height: auto;
+    border-radius: 32px;
+    box-shadow:
+      0 24px 60px rgba(0,0,0,.55),
+      0 0 0 1px rgba(255,255,255,.12);
+  }
+  .phone--front {
+    left: 260px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    width: 300px;
+  }
+  .phone--back-left {
+    left: 40px;
+    top: 50%;
+    transform: translateY(-44%) rotate(-6deg);
+    z-index: 2;
+    opacity: 0.85;
+  }
+  .phone--back-right {
+    left: 520px;
+    top: 50%;
+    transform: translateY(-44%) rotate(5deg);
+    z-index: 2;
+    opacity: 0.85;
+  }
   /* "Launched" badge — pinned to the top-left corner of the glass card */
   .launched-badge {
     position: absolute;
@@ -496,7 +520,9 @@
           <div class="showcase-stack" data-om-id="411b896c:29">
             <!-- new version, larger, foreground hero -->
             <div class="shot-new" data-om-id="411b896c:30">
-              <img src="assets/support-center-new.png" alt="Redesigned Arlo Support Center" data-om-id="411b896c:31" />
+              <img class="phone phone--back-left" src="assets/phone-6-discovery.png" alt="Camera failed to connect" />
+              <img class="phone phone--back-right" src="assets/phone-4.png" alt="Phone call request" />
+              <img class="phone phone--front" src="assets/phone-1-support.png" alt="Support home" />
             </div>
 
           </div>
