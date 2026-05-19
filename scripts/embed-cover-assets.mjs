@@ -11,6 +11,12 @@ const ASSETS_ROOT = '/Users/tians/my-portfolio/public/case-studies/assets';
 /** @type {Record<string, string>} basename -> absolute file path */
 const ASSET_SOURCES = {
   'support-center-new.jpg': new URL('./support-cover-hero.png', import.meta.url).pathname,
+  'phone-1-support.png': path.join(ASSETS_ROOT, 'phone-1-support.png'),
+  'phone-2.png': path.join(ASSETS_ROOT, 'phone-2.png'),
+  'phone-3.png': path.join(ASSETS_ROOT, 'phone-3.png'),
+  'phone-4.png': path.join(ASSETS_ROOT, 'phone-4.png'),
+  'phone-5.png': path.join(ASSETS_ROOT, 'phone-5.png'),
+  'phone-6-discovery.png': path.join(ASSETS_ROOT, 'phone-6-discovery.png'),
 
   'caption-1.png': '/Users/tians/Desktop/BACKUPS/AI/event caption/Caption 1.png',
   'caption-2.png': '/Users/tians/Desktop/BACKUPS/AI/event caption/Caption 2.png',

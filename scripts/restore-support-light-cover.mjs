@@ -1,12 +1,19 @@
 /**
- * Restore supportLight cover: light theme + desktop Support Center screenshot (no phones).
+ * Restore supportLight cover: light theme + phone cascade (hover state).
  */
 import fs from 'fs';
 import zlib from 'zlib';
+import path from 'path';
 
 const INDEX = new URL('../index.html', import.meta.url).pathname;
 const LIGHT_ORIGINAL = new URL('./_support-light-original.html', import.meta.url).pathname;
-const HERO = new URL('./support-cover-hero.png', import.meta.url).pathname;
+const ASSETS_ROOT = '/Users/tians/my-portfolio/public/case-studies/assets';
+
+const MIME = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+};
 
 function encodeEntry(html, entry) {
   return {
@@ -16,78 +23,39 @@ function encodeEntry(html, entry) {
   };
 }
 
-const dataUrl = `data:image/png;base64,${fs.readFileSync(HERO).toString('base64')}`;
+function toDataUrl(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  const mime = MIME[ext];
+  if (!mime) throw new Error(`Unsupported type ${ext}: ${filePath}`);
+  return `data:${mime};base64,${fs.readFileSync(filePath).toString('base64')}`;
+}
 
-const showcaseCss = `
-  /* --- left: desktop showcase (light) --- */
-  .showcase {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 90px;
-    pointer-events: none;
+function embedAssets(html) {
+  let out = html;
+  const refs = [...html.matchAll(/assets\/([a-zA-Z0-9._-]+)/g)].map((m) => m[1]);
+  for (const name of [...new Set(refs)]) {
+    const filePath = path.join(ASSETS_ROOT, name);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Missing asset: ${filePath}`);
+    }
+    out = out.split(`assets/${name}`).join(toDataUrl(filePath));
   }
-  .showcase-stack {
-    position: relative;
-    width: 1020px;
-    height: 100%;
-  }
-  .shot-new {
-    position: absolute;
-    width: 1020px;
-    height: auto;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    border-radius: 22px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow:
-      0 40px 80px rgba(150, 165, 180, 0.35),
-      0 0 0 1px rgba(255, 255, 255, 0.95),
-      0 0 60px rgba(26, 142, 179, 0.18);
-  }
-  .shot-new img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-`;
-
-const showcaseHtml = `      <div class="grid">
-        <div class="showcase">
-          <div class="showcase-stack">
-            <div class="shot-new">
-              <img src="${dataUrl}" alt="Redesigned Arlo Support Center" />
-            </div>
-          </div>
-        </div>
-      </div>`;
+  return out;
+}
 
 let lightHtml = fs.readFileSync(LIGHT_ORIGINAL, 'utf8');
-
-lightHtml = lightHtml.replace(
-  /\/\* phones cascade \*\/[\s\S]*?\/\* "Launched" badge/,
-  showcaseCss + '\n  /* "Launched" badge'
-);
-
-lightHtml = lightHtml.replace(
-  /<!-- main grid — phone zipper cascade -->[\s\S]*?<!-- Open case study chip -->/,
-  `<!-- main grid — desktop showcase -->\n${showcaseHtml}\n\n      <!-- Open case study chip -->`
-);
+lightHtml = embedAssets(lightHtml);
 
 if (!lightHtml.includes('Case Study Cover — Light Mode')) {
   console.error('Light cover template missing expected title');
   process.exit(1);
 }
-if (!lightHtml.includes(dataUrl.slice(0, 60))) {
-  console.error('Failed to embed hero image in light cover');
+if (!lightHtml.includes('phone-screen')) {
+  console.error('Phone markup missing from light cover');
   process.exit(1);
 }
-if (lightHtml.includes('phone-screen')) {
-  console.error('Phone markup still present in light cover');
+if (/assets\/[a-zA-Z0-9._-]+/.test(lightHtml)) {
+  console.error('Unresolved relative assets remain');
   process.exit(1);
 }
 
@@ -99,7 +67,10 @@ const ext = JSON.parse(
   pageHtml.match(/<script type="__bundler\/ext_resources">\s*([\s\S]*?)\s*<\/script>/)[1]
 );
 const supportLightUuid = ext.find((e) => e.id === 'supportLight')?.uuid;
-const supportDarkUuid = ext.find((e) => e.id === 'supportDark')?.uuid;
+if (!supportLightUuid) {
+  console.error('supportLight not in ext_resources');
+  process.exit(1);
+}
 
 manifest[supportLightUuid] = encodeEntry(lightHtml, manifest[supportLightUuid]);
 
@@ -109,8 +80,8 @@ const newPage = pageHtml.replace(
 );
 fs.writeFileSync(INDEX, newPage);
 
-const dark = zlib.gunzipSync(Buffer.from(manifest[supportDarkUuid].data, 'base64')).toString('utf8');
-const light = zlib.gunzipSync(Buffer.from(manifest[supportLightUuid].data, 'base64')).toString('utf8');
-console.log('supportLight: restored light theme with desktop UI');
-console.log('covers differ:', dark !== light);
-console.log('light title:', light.match(/<title>([^<]+)/)?.[1]);
+const light = zlib
+  .gunzipSync(Buffer.from(manifest[supportLightUuid].data, 'base64'))
+  .toString('utf8');
+console.log('supportLight: phone cascade restored with embedded assets');
+console.log('size:', light.length, 'chars');
