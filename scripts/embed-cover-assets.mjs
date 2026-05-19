@@ -1,11 +1,12 @@
 /**
- * Embed local image files as data URLs into case-study cover HTML in index.html manifest.
+ * Embed local image files as data URLs into cover HTML in all bundled pages.
  */
 import fs from 'fs';
 import zlib from 'zlib';
 import path from 'path';
 
-const INDEX = new URL('../index.html', import.meta.url).pathname;
+const ROOT = new URL('..', import.meta.url).pathname;
+const FILES = ['index.html', 'support-churn.html', 'ai-caption.html', 'crime-feature.html'];
 const ASSETS_ROOT = '/Users/tians/my-portfolio/public/case-studies/assets';
 
 /** @type {Record<string, string>} basename -> absolute file path */
@@ -48,16 +49,19 @@ const MIME = {
 
 function decodeEntry(entry) {
   const raw = Buffer.from(entry.data, 'base64');
-  return entry.compressed ? zlib.gunzipSync(raw) : raw;
+  try {
+    return entry.compressed ? zlib.gunzipSync(raw) : raw;
+  } catch {
+    return raw;
+  }
 }
 
 function encodeEntry(html, entry) {
-  const compressed = zlib.gzipSync(Buffer.from(html, 'utf8'));
   return {
     ...entry,
     mime: entry.mime || 'text/html',
     compressed: true,
-    data: compressed.toString('base64'),
+    data: zlib.gzipSync(Buffer.from(html, 'utf8')).toString('base64'),
   };
 }
 
@@ -75,70 +79,60 @@ function toDataUrl(filePath, refName) {
 function embedAssets(html) {
   let out = html;
   const refs = [...html.matchAll(/assets\/([a-zA-Z0-9._-]+)/g)].map((m) => m[1]);
-  const unique = [...new Set(refs)];
-  for (const name of unique) {
+  for (const name of [...new Set(refs)]) {
     const src = ASSET_SOURCES[name];
     if (!src) {
       console.warn(`  skip (no source mapped): assets/${name}`);
       continue;
     }
-    const dataUrl = toDataUrl(src, name);
-    out = out.split(`assets/${name}`).join(dataUrl);
+    out = out.split(`assets/${name}`).join(toDataUrl(src, name));
   }
   return out;
 }
 
-const html = fs.readFileSync(INDEX, 'utf8');
-const manifestMatch = html.match(
-  /<script type="__bundler\/manifest">\s*([\s\S]*?)\s*<\/script>/
-);
-const extMatch = html.match(
-  /<script type="__bundler\/ext_resources">\s*([\s\S]*?)\s*<\/script>/
-);
-if (!manifestMatch || !extMatch) {
-  console.error('Could not parse manifest or ext_resources');
-  process.exit(1);
-}
-
-const manifest = JSON.parse(manifestMatch[1]);
-const ext = JSON.parse(extMatch[1]);
-const coverIds = new Set([
-  'supportDark',
-  'supportLight',
-  'aiDark',
-  'aiLight',
-  'arloDark',
-  'arloLight',
-]);
-
-let updated = 0;
-for (const { id, uuid } of ext) {
-  if (!coverIds.has(id)) continue;
-  const entry = manifest[uuid];
-  if (!entry) {
-    console.warn(`No manifest entry for ${id}`);
-    continue;
-  }
-  const before = decodeEntry(entry).toString('utf8');
-  const refs = [...before.matchAll(/assets\/[a-zA-Z0-9._-]+/g)];
-  if (refs.length === 0) {
-    console.log(`${id}: already embedded (${before.length} chars)`);
-    continue;
-  }
-  const after = embedAssets(before);
-  const remaining = [...after.matchAll(/assets\/[a-zA-Z0-9._-]+/g)];
-  if (remaining.length) {
-    console.error(`${id}: still has relative assets:`, [...new Set(remaining.map((r) => r[0]))]);
-    process.exit(1);
-  }
-  manifest[uuid] = encodeEntry(after, entry);
-  console.log(
-    `${id}: embedded ${refs.length} asset ref(s), ${before.length} -> ${after.length} chars`
+for (const file of FILES) {
+  const filePath = path.join(ROOT, file);
+  const html = fs.readFileSync(filePath, 'utf8');
+  const manifestMatch = html.match(
+    /<script type="__bundler\/manifest">\s*([\s\S]*?)\s*<\/script>/
   );
-  updated++;
-}
+  const extMatch = html.match(
+    /<script type="__bundler\/ext_resources">\s*([\s\S]*?)\s*<\/script>/
+  );
+  if (!manifestMatch || !extMatch) {
+    console.warn(`${file}: skip (no manifest)`);
+    continue;
+  }
 
-const newManifestJson = JSON.stringify(manifest);
-const newHtml = html.replace(manifestMatch[1], newManifestJson);
-fs.writeFileSync(INDEX, newHtml);
-console.log(`\nWrote ${INDEX} (${updated} cover(s) updated)`);
+  const manifest = JSON.parse(manifestMatch[1]);
+  const ext = JSON.parse(extMatch[1]);
+  let updated = 0;
+
+  for (const { id, uuid } of ext) {
+    const entry = manifest[uuid];
+    if (!entry?.mime?.includes('html')) continue;
+    const before = decodeEntry(entry).toString('utf8');
+    const refs = [...before.matchAll(/assets\/[a-zA-Z0-9._-]+/g)];
+    if (refs.length === 0) continue;
+    const after = embedAssets(before);
+    const remaining = [...after.matchAll(/assets\/[a-zA-Z0-9._-]+/g)];
+    if (remaining.length) {
+      console.error(
+        `${file} ${id}: still has relative assets:`,
+        [...new Set(remaining.map((r) => r[0]))]
+      );
+      process.exit(1);
+    }
+    manifest[uuid] = encodeEntry(after, entry);
+    console.log(
+      `${file} ${id}: embedded ${refs.length} ref(s), ${before.length} -> ${after.length}`
+    );
+    updated++;
+  }
+
+  if (updated > 0) {
+    fs.writeFileSync(filePath, html.replace(manifestMatch[1], JSON.stringify(manifest)));
+  } else {
+    console.log(`${file}: all covers already embedded`);
+  }
+}
