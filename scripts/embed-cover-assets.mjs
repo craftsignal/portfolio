@@ -1,0 +1,138 @@
+/**
+ * Embed local image files as data URLs into case-study cover HTML in index.html manifest.
+ */
+import fs from 'fs';
+import zlib from 'zlib';
+import path from 'path';
+
+const INDEX = new URL('../index.html', import.meta.url).pathname;
+const ASSETS_ROOT = '/Users/tians/my-portfolio/public/case-studies/assets';
+
+/** @type {Record<string, string>} basename -> absolute file path */
+const ASSET_SOURCES = {
+  'support-center-new.jpg': new URL('./support-cover-hero.png', import.meta.url).pathname,
+
+  'caption-1.png': '/Users/tians/Desktop/BACKUPS/AI/event caption/Caption 1.png',
+  'caption-2.png': '/Users/tians/Desktop/BACKUPS/AI/event caption/Caption 2.png',
+  'caption-3.png': '/Users/tians/Desktop/BACKUPS/AI/event caption/Caption 3.png',
+  'caption-4.png': '/Users/tians/Desktop/BACKUPS/AI/event caption/Caption 4.png',
+
+  'captions-search.png': '/Users/tians/Desktop/BACKUPS/AI/event caption/Feed.jpg',
+  'captions-settings.png': '/Users/tians/Downloads/portfolio/ai caption/Settings.png',
+  'captions-enable.png': '/Users/tians/Downloads/portfolio/ai caption/Settings-1.png',
+  'captions-packages.png': '/Users/tians/Downloads/portfolio/ai caption/Location.png',
+
+  'arlosafe-aed.png': '/Users/tians/Downloads/portfolio/crimes/AED.png',
+  'arlosafe-crime.png': '/Users/tians/Downloads/portfolio/crimes/crimes.png',
+  'arlosafe-offenders.png': '/Users/tians/Downloads/portfolio/crimes/offender.png',
+
+  'arlosafe-aed-map.png': '/Users/tians/Downloads/portfolio/crimes/map.jpg',
+  'arlosafe-aed-detail.jpg': '/Users/tians/Downloads/portfolio/crimes/aed-1.jpg',
+  'arlosafe-crimes-map.png': '/Users/tians/Downloads/portfolio/crimes/crimes-2.png',
+  'arlosafe-crime-detail.png': '/Users/tians/Downloads/portfolio/crimes/screen.png',
+  'arlosafe-offender-map.png': '/Users/tians/Downloads/portfolio/crimes/Offenders_Education.png',
+};
+
+const MIME = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+};
+
+function decodeEntry(entry) {
+  const raw = Buffer.from(entry.data, 'base64');
+  return entry.compressed ? zlib.gunzipSync(raw) : raw;
+}
+
+function encodeEntry(html, entry) {
+  const compressed = zlib.gzipSync(Buffer.from(html, 'utf8'));
+  return {
+    ...entry,
+    mime: entry.mime || 'text/html',
+    compressed: true,
+    data: compressed.toString('base64'),
+  };
+}
+
+function toDataUrl(filePath, refName) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Missing asset for ${refName}: ${filePath}`);
+  }
+  const ext = path.extname(filePath).toLowerCase();
+  const mime = MIME[ext];
+  if (!mime) throw new Error(`Unsupported type ${ext} for ${refName}`);
+  const b64 = fs.readFileSync(filePath).toString('base64');
+  return `data:${mime};base64,${b64}`;
+}
+
+function embedAssets(html) {
+  let out = html;
+  const refs = [...html.matchAll(/assets\/([a-zA-Z0-9._-]+)/g)].map((m) => m[1]);
+  const unique = [...new Set(refs)];
+  for (const name of unique) {
+    const src = ASSET_SOURCES[name];
+    if (!src) {
+      console.warn(`  skip (no source mapped): assets/${name}`);
+      continue;
+    }
+    const dataUrl = toDataUrl(src, name);
+    out = out.split(`assets/${name}`).join(dataUrl);
+  }
+  return out;
+}
+
+const html = fs.readFileSync(INDEX, 'utf8');
+const manifestMatch = html.match(
+  /<script type="__bundler\/manifest">\s*([\s\S]*?)\s*<\/script>/
+);
+const extMatch = html.match(
+  /<script type="__bundler\/ext_resources">\s*([\s\S]*?)\s*<\/script>/
+);
+if (!manifestMatch || !extMatch) {
+  console.error('Could not parse manifest or ext_resources');
+  process.exit(1);
+}
+
+const manifest = JSON.parse(manifestMatch[1]);
+const ext = JSON.parse(extMatch[1]);
+const coverIds = new Set([
+  'supportDark',
+  'supportLight',
+  'aiDark',
+  'aiLight',
+  'arloDark',
+  'arloLight',
+]);
+
+let updated = 0;
+for (const { id, uuid } of ext) {
+  if (!coverIds.has(id)) continue;
+  const entry = manifest[uuid];
+  if (!entry) {
+    console.warn(`No manifest entry for ${id}`);
+    continue;
+  }
+  const before = decodeEntry(entry).toString('utf8');
+  const refs = [...before.matchAll(/assets\/[a-zA-Z0-9._-]+/g)];
+  if (refs.length === 0) {
+    console.log(`${id}: already embedded (${before.length} chars)`);
+    continue;
+  }
+  const after = embedAssets(before);
+  const remaining = [...after.matchAll(/assets\/[a-zA-Z0-9._-]+/g)];
+  if (remaining.length) {
+    console.error(`${id}: still has relative assets:`, [...new Set(remaining.map((r) => r[0]))]);
+    process.exit(1);
+  }
+  manifest[uuid] = encodeEntry(after, entry);
+  console.log(
+    `${id}: embedded ${refs.length} asset ref(s), ${before.length} -> ${after.length} chars`
+  );
+  updated++;
+}
+
+const newManifestJson = JSON.stringify(manifest);
+const newHtml = html.replace(manifestMatch[1], newManifestJson);
+fs.writeFileSync(INDEX, newHtml);
+console.log(`\nWrote ${INDEX} (${updated} cover(s) updated)`);

@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Case Study Cover — Light Mode</title>
+<style>
+  :root {
+    --teal:        #0b5c7a;
+    --teal-deep:   #084a63;
+    --teal-glow:   #1a8eb3;
+    --teal-soft:   rgba(26, 142, 179, .35);
+    --ink:         #0e1117;
+    --ink-2:       #2a313b;
+    --text:        #1c2027;
+    --text-dim:    rgba(28, 32, 39, .68);
+    --text-mute:   rgba(28, 32, 39, .42);
+    --hair:        rgba(20,30,45,.10);
+    --hair-2:      rgba(20,30,45,.16);
+    --green:       #5fb16a;
+  }
+
+  html, body { margin: 0; padding: 0; background: #e8ecf1; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                 "Helvetica Neue", Inter, system-ui, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Stage scales the 2100x1576 canvas to fit the viewport */
+  .stage {
+    position: fixed; inset: 0;
+    background: #d9dee4;
+    overflow: hidden;
+  }
+  .canvas {
+    width: 2100px; height: 1576px;
+    position: absolute;
+    left: 50%; top: 50%;
+    transform-origin: 0 0;
+    background:
+      radial-gradient(ellipse 1400px 900px at 70% 35%, rgba(190, 220, 235, .55), transparent 65%),
+      radial-gradient(ellipse 1100px 800px at 20% 80%, rgba(220, 228, 236, .8), transparent 70%),
+      linear-gradient(180deg, #f0f3f7 0%, #e6ebf0 50%, #eef2f6 100%);
+    overflow: hidden;
+  }
+
+  /* --- ambient sparkle / star dust --- */
+  .grain {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(rgba(255,255,255,.6) 1px, transparent 1px),
+      radial-gradient(rgba(255,255,255,.4) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 2px;
+    opacity: .35;
+    pointer-events: none;
+  }
+
+  /* --- floating orbs --- */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(.4px);
+  }
+  .orb--soft {
+    background:
+      radial-gradient(circle at 32% 28%, #ffffff 0%, #f0f3f7 28%, #d6dce3 70%, #c9d0d8 100%);
+    box-shadow:
+      inset -30px -50px 100px rgba(150, 165, 180, .3),
+      inset 24px 24px 70px rgba(255,255,255,.95),
+      0 30px 60px rgba(150, 160, 175, .22),
+      0 6px 16px rgba(150, 160, 175, .12);
+  }
+  .orb--teal {
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,.95), rgba(220, 240, 248, .5) 22%, transparent 38%),
+      radial-gradient(circle at 50% 50%, #cfe3ec 0%, #87b3c4 50%, #4a7d92 100%);
+    box-shadow:
+      inset -28px -42px 90px rgba(40, 70, 88, .35),
+      inset 20px 20px 60px rgba(220, 240, 248, .6),
+      0 20px 60px rgba(110, 145, 160, .35),
+      0 0 80px rgba(135, 179, 196, .25);
+  }
+
+  /* layout positions for orbs */
+  .o1 { width: 320px; height: 320px; left: -90px;   top: 120px; }
+  .o2 { width: 180px; height: 180px; left:  60px;   top: 1180px; }
+  .o3 { width: 90px;  height: 90px;  left:  720px;  top: 60px; }
+  .o4 { width: 240px; height: 240px; right: -80px;  top: 90px; }
+  .o5 { width: 380px; height: 380px; right: -160px; top: 980px; }
+  .o6 { width: 130px; height: 130px; right: 360px;  top: 1280px; }
+  .o7 { width: 60px;  height: 60px;  left:  900px;  top: 1380px; }
+  .o8 { width: 220px; height: 220px; left:  1080px; top: -80px; }
+  .o9 { width: 70px;  height: 70px;  right: 220px;  top: 460px; }
+  .oA { width: 150px; height: 150px; left:  300px;  top: 1380px; }
+
+  /* --- glass card --- */
+  .glass {
+    position: absolute;
+    left: 100px; top: 110px;
+    width: 1900px; height: 1356px;
+    border-radius: 36px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,.55) 50%, rgba(255,255,255,.7) 100%);
+    backdrop-filter: blur(40px) saturate(1.2);
+    -webkit-backdrop-filter: blur(40px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.95);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 -1px 0 rgba(180, 190, 200, .25),
+      0 40px 100px rgba(150, 165, 180, .35),
+      0 8px 30px rgba(150, 165, 180, .18);
+    overflow: hidden;
+  }
+  /* highlight sweep on glass */
+  .glass::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 900px 600px at 80% 20%, rgba(135, 179, 196, .15), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 15% 90%, rgba(255,255,255,.5), transparent 60%);
+    pointer-events: none;
+  }
+  .glass::after {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
+  }
+
+  /* --- card content grid --- */
+  .grid {
+    position: absolute; inset: 0;
+    z-index: 2;
+  }
+
+  /* phones cascade */
+  .phones {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+  /* Thin, light, premium iPhone frame.
+     Screen art is 460×980 (23:49). Phone width 280, total height 596. */
+  .phone {
+    position: absolute;
+    width: 280px;
+    height: 596px;
+    border-radius: 38px;
+    padding: 6px;
+    background: linear-gradient(160deg, #ffffff 0%, #f3f5f8 50%, #e6e9ee 100%);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.04),
+      0 24px 40px rgba(70, 90, 115, 0.16),
+      0 10px 20px rgba(70, 90, 115, 0.09),
+      0 4px 8px rgba(70, 90, 115, 0.05);
+    will-change: transform;
+  }
+  .phone-screen {
+    width: 100%; height: 100%;
+    border-radius: 32px;
+    overflow: hidden;
+    background: #f0f2f6;
+    position: relative;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+  .phone-screen img {
+    display: block;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .phone-screen::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(155deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 22%);
+    pointer-events: none;
+  }
+  /* Zipper cascade — centered within glass.
+     Glass: 1900 × 1356 (relative origin). Phone: 280 × 596.
+     6 phones × 280 = 1680; 5 gaps × 16 = 80; total row 1760; left margin = 70.
+     Column lefts: 70, 366, 662, 958, 1254, 1550 (step 296).
+     High row top: 220, low row top: 540 — both fully visible, no edge crop. */
+  .p1 { left: 70px;   top: 540px; animation: float1 7.2s ease-in-out infinite; } /* low */
+  .p2 { left: 366px;  top: 220px; animation: float2 8.4s ease-in-out infinite; } /* high */
+  .p3 { left: 662px;  top: 540px; animation: float3 6.8s ease-in-out infinite; } /* low */
+  .p4 { left: 958px;  top: 220px; animation: float4 7.8s ease-in-out infinite; } /* high */
+  .p5 { left: 1254px; top: 540px; animation: float5 8.0s ease-in-out infinite; } /* low */
+  .p6 { left: 1550px; top: 220px; animation: float6 7.4s ease-in-out infinite; } /* high */
+
+  @keyframes float1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes float2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes float3 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes float4 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes float5 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  @keyframes float6 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-11px); } }
+
+  .p1 { animation-delay: -0.0s; }
+  .p2 { animation-delay: -1.4s; }
+  .p3 { animation-delay: -2.8s; }
+  .p4 { animation-delay: -0.7s; }
+  .p5 { animation-delay: -3.5s; }
+  .p6 { animation-delay: -2.1s; }
+
+  /* "Launched" badge — pinned to the top-left corner of the glass card */
+  .launched-badge {
+    position: absolute;
+    top: 38px; left: 80px;
+    z-index: 5;
+    background: linear-gradient(135deg, rgba(26,142,179,.98), rgba(11,92,122,.98));
+    color: #fff;
+    font-size: 14px; font-weight: 600;
+    padding: 9px 18px; border-radius: 999px;
+    letter-spacing: .14em; text-transform: uppercase;
+    box-shadow:
+      0 12px 28px rgba(26,142,179,.5),
+      inset 0 1px 0 rgba(255,255,255,.35),
+      0 0 0 1px rgba(255,255,255,.6);
+  }
+
+  /* --- right: content panel --- */
+  .content {
+    align-self: center;
+    padding-top: 40px;
+    padding-right: 20px;
+  }
+
+  .tag-row {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .tag {
+    padding: 9px 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef2f6 100%);
+    border: 1px solid rgba(255,255,255,1);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-2);
+    letter-spacing: .01em;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      0 4px 10px rgba(150, 165, 180, .14),
+      0 1px 2px rgba(150, 165, 180, .08);
+  }
+  .tag--accent {
+    background: linear-gradient(180deg, #f0f6f9 0%, #d8e6ec 100%);
+    color: var(--teal);
+    border-color: rgba(255,255,255,1);
+  }
+
+  h1 {
+    font-size: 78px;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+    margin: 0 0 32px 0;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h1 .accent {
+    background: linear-gradient(135deg, #1a8eb3 0%, #0b5c7a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .blurb {
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin: 0 0 56px 0;
+    max-width: 880px;
+    text-wrap: pretty;
+  }
+
+  /* metrics */
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--hair);
+  }
+  .metric {
+    position: relative;
+  }
+  .metric-num {
+    font-size: 76px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 14px;
+    background: linear-gradient(180deg, #1c2027 0%, #4a525c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .metric-num .unit {
+    font-size: 44px;
+    font-weight: 500;
+    margin-left: 4px;
+    color: var(--text-mute);
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+  }
+  .metric-desc {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    max-width: 320px;
+  }
+
+  /* role meta block */
+  .meta-row {
+    margin-top: 56px;
+    display: flex; gap: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--hair);
+  }
+  .meta-item .meta-label {
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 6px;
+  }
+  .meta-item .meta-val {
+    font-size: 16px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* footer */
+  .footer {
+    position: absolute;
+    left: 90px; right: 90px; bottom: 44px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 3;
+    color: var(--text-mute);
+    font-size: 14px;
+    letter-spacing: .06em;
+  }
+  .footer-index {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .index-num {
+    font-size: 16px; font-weight: 600; color: var(--ink);
+    font-feature-settings: "tnum";
+  }
+  .index-bar {
+    width: 80px; height: 2px; background: var(--hair-2); border-radius: 2px;
+    position: relative; overflow: hidden;
+  }
+  .index-bar::after {
+    content: ""; position: absolute; inset: 0;
+    width: 50%;
+    background: linear-gradient(90deg, #1a8eb3, #5db1cc);
+  }
+  .footer-cta { display: flex; align-items: center; gap: 10px; color: var(--text-dim); }
+
+  /* Open case study chip — bottom-left of glass card */
+  .scroll-chip {
+    position: absolute;
+    left: 90px; bottom: 90px;
+    width: 380px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 28px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef2f6 100%);
+    border: 1px solid rgba(255,255,255,1);
+    border-radius: 999px;
+    z-index: 3;
+    color: var(--ink-2);
+    font-size: 35px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,1),
+      0 8px 20px rgba(150, 165, 180, .18),
+      0 1px 2px rgba(150, 165, 180, .1);
+  }
+
+  /* corner labels */
+  .corner-tag {
+    position: absolute;
+    z-index: 3;
+    color: var(--text-mute);
+    font-size: 13px;
+    letter-spacing: .06em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .corner-tag-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(28, 32, 39, .5);
+  }
+  .corner-tag .num {
+    color: rgba(28, 32, 39, .35);
+    font-feature-settings: "tnum";
+    font-size: 12px;
+    margin-left: 4px;
+  }
+  .ct-1 { left: 130px; top: 280px; }
+  .ct-2 { right: 280px; top: 250px; }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="canvas" id="canvas" data-screen-label="01 Cover Light">
+
+    <!-- ambient grain -->
+    <div class="grain"></div>
+
+    <!-- background orbs (behind glass) -->
+    <div class="orb orb--soft o1"></div>
+    <div class="orb orb--teal o4"></div>
+    <div class="orb orb--soft o5"></div>
+    <div class="orb orb--teal o3"></div>
+    <div class="orb orb--soft o8"></div>
+
+    <!-- glass card -->
+    <div class="glass">
+      <!-- corner labels removed -->
+
+      <!-- foreground orbs intersecting glass -->
+      <div class="orb orb--soft o2" style="position:absolute;"></div>
+      <div class="orb orb--teal o6" style="position:absolute;"></div>
+      <div class="orb orb--soft o9" style="position:absolute;"></div>
+      <div class="orb orb--soft o7" style="position:absolute;"></div>
+      <div class="orb orb--teal oA" style="position:absolute;"></div>
+
+      <!-- main grid — phone zipper cascade -->
+      <div class="grid">
+        <div class="phones">
+          <div class="phone p1">
+            <div class="phone-screen"><img src="assets/phone-6-discovery.png" alt="Camera failed to connect" /></div>
+          </div>
+          <div class="phone p2">
+            <div class="phone-screen"><img src="assets/phone-1-support.png" alt="Support landing" /></div>
+          </div>
+          <div class="phone p3">
+            <div class="phone-screen"><img src="assets/phone-5.png" alt="Talk with our next available agent" /></div>
+          </div>
+          <div class="phone p4">
+            <div class="phone-screen"><img src="assets/phone-4.png" alt="Phone call request received" /></div>
+          </div>
+          <div class="phone p5">
+            <div class="phone-screen"><img src="assets/phone-2.png" alt="Support Center home" /></div>
+          </div>
+          <div class="phone p6">
+            <div class="phone-screen"><img src="assets/phone-3.png" alt="Backyard Pro 5S device support" /></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Open case study chip -->
+      <div class="scroll-chip">
+        <span>Open case study ↗</span>
+      </div>
+
+      <!-- footer removed -->
+
+    </div><!-- /.glass -->
+
+  </div><!-- /.canvas -->
+</div>
+
+<script>
+  (function () {
+    const stage  = document.getElementById('stage');
+    const canvas = document.getElementById('canvas');
+    const W = 2100, H = 1576;
+    function fit() {
+      const sx = stage.clientWidth  / W;
+      const sy = stage.clientHeight / H;
+      const s  = Math.min(sx, sy);
+      canvas.style.transform = 'scale(' + s + ') translate(-50%, -50%)';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+  })();
+</script>
+
+</body>
+</html>
