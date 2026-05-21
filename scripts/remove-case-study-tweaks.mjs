@@ -122,6 +122,27 @@ const PATCHES = [
       );
     }`,
   },
+  {
+    file: 'crime-feature.html',
+    oldApp: null, // extracted at runtime — block is large
+    newApp: `function App() {
+  return (
+    <>
+          <CrimeFeaturePage
+            subscribersVariant="original"
+            quotesVariant="marquee"
+            matrixVariant="scatter"
+            insightVariant="stamp"
+            prioritizationVariant="ranked"
+            explorationsVariant="original"
+            optionVariant="verdict"
+            deckVariant="original"
+          />
+          <Footer />
+        </>);
+
+}`,
+  },
 ];
 
 function getTemplateBounds(html) {
@@ -139,7 +160,15 @@ function encodeTemplateJson(template) {
   return JSON.stringify(template).replace(/<\/script>/gi, '\\u003C/script\\u003E');
 }
 
-for (const { file, oldApp, newApp } of PATCHES) {
+function extractAppBlock(template) {
+  const start = template.indexOf('function App()');
+  if (start === -1) throw new Error('function App() not found');
+  const end = template.indexOf('ReactDOM.createRoot', start);
+  if (end === -1) throw new Error('ReactDOM.createRoot not found after App');
+  return template.slice(start, end);
+}
+
+for (const { file, oldApp: oldAppFixed, newApp } of PATCHES) {
   const filePath = path.join(ROOT, file);
   let html = fs.readFileSync(filePath, 'utf8');
   const { contentStart, contentEnd } = getTemplateBounds(html);
@@ -149,6 +178,7 @@ for (const { file, oldApp, newApp } of PATCHES) {
     console.log(`${file}: Tweaks already removed`);
     continue;
   }
+  const oldApp = oldAppFixed ?? extractAppBlock(template);
   if (!template.includes(oldApp)) {
     console.error(`${file}: App block mismatch — update remove-case-study-tweaks.mjs`);
     process.exit(1);
