@@ -136,6 +136,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     // createElement so they execute, awaiting onload for src scripts to
     // preserve ordering (React before ReactDOM before Babel before text/babel).
     const doc = new DOMParser().parseFromString(template, 'text/html');
+
+    // Carry the branded placeholder into the new document and keep it on
+    // top (it's position:fixed so it still covers the viewport regardless
+    // of where in the DOM it lives) instead of letting replaceWith expose
+    // the new page's unmounted, unstyled shell for a frame or two. It gets
+    // faded out below once React has had a chance to mount and paint.
+    const thumbnailEl = document.getElementById('__bundler_thumbnail');
+    if (thumbnailEl && doc.body) {
+      thumbnailEl.style.transition = 'opacity .6s ease';
+      doc.body.appendChild(thumbnailEl);
+    }
+
     document.documentElement.replaceWith(doc.documentElement);
     const dead = Array.from(document.scripts);
     for (const old of dead) {
@@ -160,6 +172,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
       window.Babel.transformScriptTags();
     }
+
+    // Give the real page a couple of frames plus a short buffer to mount
+    // and paint before fading the placeholder away, so the transition
+    // reads as a deliberate crossfade rather than an abrupt swap.
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        setTimeout(function() {
+          const t = document.getElementById('__bundler_thumbnail');
+          if (t) {
+            t.style.opacity = '0';
+            t.style.pointerEvents = 'none';
+            t.addEventListener('transitionend', function() { t.remove(); }, { once: true });
+            setTimeout(function() { if (t.parentNode) t.remove(); }, 900);
+          }
+        }, 250);
+      });
+    });
   } catch (err) {
     setStatus('Error unpacking: ' + err.message);
     console.error('Bundle unpack error:', err);
