@@ -5,10 +5,7 @@
   <title>Beyond Generic Alerts — Case Study</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #f5f3ee; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-    #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
-    #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f5f3ee; z-index: 9999; }
-    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
+    body { background: #0a0a0a; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #__bundler_placeholder { color: #999; font-size: 14px; }
   </style>
   <noscript>
@@ -20,22 +17,11 @@
 </head>
 <body>
 <script>(function(){try{if(localStorage.getItem("auth")!=="true"){location.replace("password.html");}}catch(e){location.replace("password.html");}})();</script>
-  <div id="__bundler_thumbnail">
-    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
-      <rect width="1200" height="800" fill="#f5f3ee"></rect>
-      <g transform="translate(600 400)" text-anchor="middle">
-        <text font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="120" fill="#0a0a0a" y="0">Beyond Generic Alerts</text>
-        <text font-family="-apple-system, system-ui, sans-serif" font-size="28" letter-spacing="6" fill="#6b6b6b" y="80">AI&nbsp;EVENT&nbsp;CAPTIONS&nbsp;·&nbsp;CASE&nbsp;STUDY</text>
-      </g>
-    </svg>
-  </div>
-  <div id="__bundler_loading">Unpacking...</div>
 
   <script>
     
 document.addEventListener('DOMContentLoaded', async function() {
-  const loading = document.getElementById('__bundler_loading');
-  function setStatus(msg) { if (loading) loading.textContent = msg; }
+  function setStatus(msg) { /* splash removed */ }
 
   // Error sink persists across replaceWith since it's on window, not the DOM.
   window.addEventListener('error', function(e) {
